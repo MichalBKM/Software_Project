@@ -21,3 +21,28 @@ float* K_means(K, iter=200, input_data.txt){
     return centroids
 
  */
+
+double* k_means()
+void is_valid_input(int k, int iter);
+
+int main(int argc, char** argv){
+    int k, iter;
+    char* filename;
+    k = //argv[0].to_int()
+    iter =//argv[1] check if it is an integer if not. we take iter=200
+    filename = //argv[2]
+    is_valid_input(k, iter, filename);
+
+
+    return k_means(k, iter, filename)
+}
+
+double* k_means(int k, int iter, char* filename){
+    FILE *fp = fopen(filename, "r");
+    if (fp ==NULL){
+        printf("Error: could not open file %s", filename);
+        return 1;
+    }
+
+}
+
