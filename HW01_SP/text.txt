@@ -1,0 +1,7 @@
+Hello! This is a text test file.
+in this file
+we have...
+some text!
+good luck
+and
+Goodbye!
