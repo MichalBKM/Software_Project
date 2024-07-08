@@ -28,6 +28,7 @@ int compute_n(char *filename);
 double** initial_centroids(double** mat, int k, int d);
 // for testings:
 void print_matrix(double** matrix, int n, int d);
+void free_matrix(double** matrix, int n);
 
 /* Calculating d - vector size */
 int compute_d(char *filename){
@@ -151,43 +152,10 @@ int k_means(int k, int iter, char* filename){
     data_matrix = compute_data_matrix(filename, n, d);
     centroids = initial_centroids(data_matrix, k, d);
 
-    print_matrix(data_matrix, k, d);
+    free_matrix(data_matrix, n);
 
-    //Free the allocated memory
-    for (i = 0; i < n; i++) {
-        free(data_matrix[i]);
-    }
-    free(data_matrix);
-    for (i = 0; i < k; i++){
-        free(centroids[i]);
-    }
-    free(centroids);
+    print_matrix(centroids);
 
-    return 0;
-}
-
-
-/*
-Missing:
-* valid inputs of extreme cases */
-int main(int argc, char** argv){
-    int k, iter; //later check validity
-    char *filename;
-    if ((argc != 3) && (argc != 4)){
-        perror("Invalid Input!");
-        return 1;
-    }
-    else if (argc == 4){
-        int k = atoi(argv[1]); 
-        int iter = atoi(argv[2]); 
-        filename = argv[3];
-    }
-    else if (argc == 3){
-        k = atoi(argv[1]); 
-        iter = 200;
-        filename = argv[2];
-    }
-    k_means(k, iter, filename);
     return 0;
 }
    
@@ -200,4 +168,38 @@ void print_matrix(double** matrix, int n, int d){
         }
         printf("\n");
     }
+}
+
+//Free the allocated memory
+void free_matrix(double** matrix, int n){
+    int i;
+    for (i = 0; i < n; i++) {
+        free(matrix[i]);
+    }
+    free(matrix);
+    
+}
+
+/*
+Missing:
+* valid inputs of extreme cases */
+int main(int argc, char** argv){
+    int k, iter; //later check validity
+    char *filename;
+    if ((argc != 3) && (argc != 4)){
+        perror("Invalid Input!");
+        return 1;
+    }
+    else if (argc == 4){
+        k = atoi(argv[1]); 
+        iter = atoi(argv[2]); 
+        filename = argv[3];
+    }
+    else if (argc == 3){
+        k = atoi(argv[1]); 
+        iter = 200;
+        filename = argv[2];
+    }
+    k_means(k, iter, filename);
+    return 0;
 }
