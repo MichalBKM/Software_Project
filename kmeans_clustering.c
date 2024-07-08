@@ -23,48 +23,13 @@ float* K_means(K, iter=200, input_data.txt){
 
 int k_means(int k, int iter, char* filename);
 void is_valid_input(int k, int iter);
-
-/* Calculating d - vector size */
-int compute_d(char *filename){
-    FILE *fp = fopen(filename, "r");
-     if (fp ==NULL){
-        perror("Failed to read line (line 57 in the code)");
-        fclose(fp);
-        exit(1);
-    }
-    int d = 0;
-    char ch;
-    while((ch = fgetc(fp)) != '\n'){
-       if (ch == ',')
-       d++; 
-    }
-    fclose(fp);
-    printf("vector size:%d\n", d+1);
-    return d + 1; // Number of "," + 1
-}
-
-/* Calculating n - number of lines */
-int compute_n(char *filename){
-    FILE *fp = fopen(filename, "r");
-     if (fp ==NULL){
-        perror("Failed to read line (line 57 in the code)");
-        fclose(fp);
-        exit(1);
-    }
-    int n = 0;
-    char ch;
-     while ((ch = fgetc(fp)) != EOF) {
-        if (ch == '\n')
-        n++;
-    }
-    fclose(fp);
-    printf("number of lines:%d\n", n+1);
-    return n + 1; // Number of lines
-}
+double** compute_data_matrix(char *filename, int n, int d);
+int compute_d(char *filename);
 
 int k_means(int k, int iter, char* filename){
     int d = compute_d(filename);
     int n = compute_n(filename);
+    double **data_matrix, **centroids;
 
     FILE *fp = fopen(filename, "r");
 
@@ -74,31 +39,91 @@ int k_means(int k, int iter, char* filename){
         return 1;
     }
 
-    int i=0,j=0;
-    double** mat = (double**)malloc(sizeof(double*) * n);
-    for (i=0; i<n; i++){
-        mat[i] = (double*)malloc(sizeof(double) * d);
-    }
+    data_matrix = compute_data_matrix(filename, n, d);
    
-    //Scan the filesomehow and put the *double-type* numbers in the matrix
-
 
     //Print matrix - just to check correctness of code  
     for(i=0; i<n; i++){
         for(j=0;j<d;j++){
-            printf("%.4f ", mat[i][j]);
+            printf("%.4f ", data_matrix[i][j]);
         }
         printf("\n");
     }
+    // Print matrix - just to check correctness of code  
 
     //Free the allocated memory
     for (i = 0; i < n; i++) {
-        free(mat[i]);
+        free(data_matrix[i]);
     }
-    free(mat);
+    free(data_matrix);
 
     fclose(fp);
     return 0;
+}
+/* Calculating d - vector size */
+int compute_d(char *filename){
+    FILE *fp = fopen(filename, "r");
+    int d = 0;
+    char ch;
+     if (fp ==NULL){
+        perror("Failed to read line (line 57 in the code)");
+        fclose(fp);
+        exit(1);
+    }
+    while((ch = fgetc(fp)) != '\n'){
+       if (ch == ',')
+       d++; 
+    }
+    fclose(fp);
+    printf("vector size:%d\n", d+1);
+    return d + 1; // Number of ","
+}
+
+/* Calculating n - number of lines */
+int compute_n(char *filename){
+    FILE *fp = fopen(filename, "r");
+    int n = 0;
+    char line[255];
+    if (fp ==NULL){
+        perror("Failed to read line (line 57 in the code)");
+        fclose(fp);
+        exit(1);
+    }
+     while (fgets(line, sizeof(line), fp) != NULL) {
+        n++;
+    }
+    fclose(fp);
+    printf("number of lines:%d\n", n+1);
+    return n + 1; // Number of lines
+}
+
+double** compute_data_matrix(char *filename, int n, int d){
+    FILE *fp;
+    int i=0,j=0;
+    double** mat = malloc(sizeof(double*) * n);
+    char *line[255];
+    char *point_buffer;
+    char ch;
+    if (mat == NULL){
+        perror("Failed to allocate memory (line 105)");
+        exit(1);
+    }
+    for (i=0; i<n; i++){
+        mat[i] = malloc(sizeof(double) * d);
+        if (mat[i] == NULL){
+            perror("Failed to allocate memory (line 105)");
+            exit(1);
+        }
+    }
+    fp = fopen(filename, "r");
+    while (fgets(line, sizeof(line), fp) != NULL){
+        while((ch = fgetc(fp)) != '\n'){
+       if (ch == ','){
+
+       }
+    }
+
+
 }
 
 
