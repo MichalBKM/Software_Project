@@ -28,7 +28,6 @@ int compute_n(char *filename);
 double** initial_centroids(double** mat, int k, int d);
 // for testings:
 void print_matrix(double** matrix, int n, int d);
-void free_matrix(double** matrix, int n);
 
 /* Calculating d - vector size */
 int compute_d(char *filename){
@@ -128,18 +127,44 @@ double** compute_data_matrix(char *filename, int n, int d){
 }
 
 double** initial_centroids(double** mat, int k, int d){
-    double** centroids = malloc(sizeof(double*) * k);
-    for (int i=0; i<k; i++){
+    int i, j;
+    double** centroids;
+    printf("&&\n");
+    centroids = malloc(sizeof(double*) * k);
+
+    if (centroids == NULL){
+        perror("Failed to allocate memory (line 73)");
+        exit(1);
+    }
+    printf("allocated memory 1 OK\n");
+
+    for (i=0; i<k; i++){ //failed here - why????
         centroids[i] = malloc(sizeof(double) * d);
         if (centroids[i] == NULL){
-            perror("Failed to allocate memory (line 134)");
+            perror("Failed to allocate memory (line 79)");
             exit(1);
-        }
-        for (int j=0; j<d; j++){
+            }
+        printf("allocated memory 2 OK\n");
+
+        for (j=0; j<d; j++){
+            printf("$");
             centroids[i][j] = mat[i][j];
+            printf("centroids: %f",centroids[i][j]);
         }
     }
     return centroids;
+}
+    
+
+//Print matrix - for testings - works OK
+void print_matrix(double** matrix, int rows, int cols){
+    int i, j;
+    for(i=0; i<rows; i++){
+        for(j=0;j<cols;j++){
+            printf("%.4f ", matrix[i][j]);
+        }
+        printf("\n");
+    }
 }
 
 int k_means(int k, int iter, char* filename){
@@ -150,35 +175,27 @@ int k_means(int k, int iter, char* filename){
     int *vectors_per_clusters;
 
     data_matrix = compute_data_matrix(filename, n, d);
-    centroids = initial_centroids(data_matrix, k, d);
+    centroids = initial_centroids(data_matrix, k, d); //FAILING
 
-    free_matrix(data_matrix, n);
+    //printf("matrix:\n");
+    //print_matrix(data_matrix, n, d);
+    printf("centroids:\n");
+    print_matrix(centroids, k, d);
 
-    print_matrix(centroids);
+    //Free the allocated memory
+    /*
+    for (i = 0; i < n; i++) {
+        free(data_matrix[i]);
+    }
+    free(data_matrix);
+    for (i = 0; i < k; i++){
+        free(centroids[i]);
+    }
+    free(centroids);*/
 
     return 0;
 }
-   
-//Print matrix - just to check correctness of code  
-void print_matrix(double** matrix, int n, int d){
-    int i, j;
-    for(i=0; i<n; i++){
-        for(j=0;j<d;j++){
-            printf("%.4f ", matrix[i][j]);
-        }
-        printf("\n");
-    }
-}
 
-//Free the allocated memory
-void free_matrix(double** matrix, int n){
-    int i;
-    for (i = 0; i < n; i++) {
-        free(matrix[i]);
-    }
-    free(matrix);
-    
-}
 
 /*
 Missing:
@@ -186,19 +203,19 @@ Missing:
 int main(int argc, char** argv){
     int k, iter; //later check validity
     char *filename;
-    if ((argc != 3) && (argc != 4)){
-        perror("Invalid Input!");
-        return 1;
-    }
-    else if (argc == 4){
-        k = atoi(argv[1]); 
-        iter = atoi(argv[2]); 
+    if (argc == 4){
+        int k = atoi(argv[1]); 
+        int iter = atoi(argv[2]); 
         filename = argv[3];
     }
     else if (argc == 3){
         k = atoi(argv[1]); 
         iter = 200;
         filename = argv[2];
+    }
+    else{
+        perror("Invalid Input!");
+        return 1;
     }
     k_means(k, iter, filename);
     return 0;
