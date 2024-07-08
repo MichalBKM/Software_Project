@@ -25,6 +25,9 @@ int k_means(int k, int iter, char* filename);
 void is_valid_input(int k, int iter);
 double** compute_data_matrix(char *filename, int n, int d);
 int compute_d(char *filename);
+int compute_n(char *filename);
+double** initial_centroids(double** mat, int k, int d);
+
 
 int k_means(int k, int iter, char* filename){
     int d = compute_d(filename);
@@ -32,24 +35,32 @@ int k_means(int k, int iter, char* filename){
     double **data_matrix, **centroids;
 
     data_matrix = compute_data_matrix(filename, n, d);
-   
+    
+    centroids = initial_centroids(data_matrix, k, d);
 
     //Print matrix - just to check correctness of code  
-    for(i=0; i<n; i++){
-        for(j=0;j<d;j++){
+    printf("printing whole matrix:\n");
+    for(int i=0; i<n; i++){
+        for(int j=0;j<d;j++){
             printf("%.4f ", data_matrix[i][j]);
         }
         printf("\n");
     }
-    // Print matrix - just to check correctness of code  
-
+    
+    //Print k centroids - just to check correctness of code
+    printf("printing whole matrix:\n");  
+    for(int i=0; i<n; i++){
+        for(int j=0;j<d;j++){
+            printf("%.4f ", centroids[i][j]);
+        }
+        printf("\n");
+    }
+    
     //Free the allocated memory
-    for (i = 0; i < n; i++) {
+    for (int i = 0; i < n; i++) {
         free(data_matrix[i]);
     }
     free(data_matrix);
-
-    fclose(fp);
     return 0;
 }
 /* Calculating d - vector size */
@@ -131,17 +142,31 @@ double** compute_data_matrix(char *filename, int n, int d){
         }
         i++;
     }
-
     fclose(fp);
     return mat;
 }
 
+double** initial_centroids(double** mat, int k, int d){
+    double** centroids = malloc(sizeof(double*) * k);
+    for (int i=0; i<k; i++){
+        centroids[i] = malloc(sizeof(double) * d);
+        if (centroids[i] == NULL){
+            perror("Failed to allocate memory (line 105)");
+            exit(1);
+        }
+        for (int j=0; j<d; j++){
+            centroids[i][j] = mat[i][j];
+        }
+    }
+    return centroids;
+}
 
 int main(int argc, char** argv){
     int k = atoi(argv[1]); //later check validity
     int iter = atoi(argv[2]); //later check validity
     char* filename = argv[3]; //assume validity
+    printf("iter: %d\n", iter);
     k_means(k, iter, filename);
-
+    
     return 0;
 }
