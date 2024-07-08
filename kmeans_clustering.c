@@ -31,14 +31,6 @@ int k_means(int k, int iter, char* filename){
     int n = compute_n(filename);
     double **data_matrix, **centroids;
 
-    FILE *fp = fopen(filename, "r");
-
-    if (fp ==NULL){
-        perror("Failed to read line (line 57 in the code)");
-        fclose(fp);
-        return 1;
-    }
-
     data_matrix = compute_data_matrix(filename, n, d);
    
 
@@ -66,8 +58,7 @@ int compute_d(char *filename){
     int d = 0;
     char ch;
      if (fp ==NULL){
-        perror("Failed to read line (line 57 in the code)");
-        fclose(fp);
+        perror("Failed to read line (line 61 in the code)");
         exit(1);
     }
     while((ch = fgetc(fp)) != '\n'){
@@ -85,27 +76,27 @@ int compute_n(char *filename){
     int n = 0;
     char line[255];
     if (fp ==NULL){
-        perror("Failed to read line (line 57 in the code)");
-        fclose(fp);
+        perror("Failed to read line (line 79 in the code)");
         exit(1);
     }
-     while (fgets(line, sizeof(line), fp) != NULL) {
+     while (fgets(line, 255, fp) != NULL) {
         n++;
     }
     fclose(fp);
-    printf("number of lines:%d\n", n+1);
-    return n + 1; // Number of lines
+    printf("number of lines:%d\n", n);
+    return n;
 }
 
+/* reads a text file with n rows and d columns, converts it into a double matrix of the size n*d */
 double** compute_data_matrix(char *filename, int n, int d){
     FILE *fp;
-    int i=0,j=0;
+    int i,j, buffer_index, k;
     double** mat = malloc(sizeof(double*) * n);
-    char *line[255];
-    char *point_buffer;
+    char line[255];
+    char buffer[50];
     char ch;
     if (mat == NULL){
-        perror("Failed to allocate memory (line 105)");
+        perror("Failed to allocate memory (line 99)");
         exit(1);
     }
     for (i=0; i<n; i++){
@@ -116,14 +107,33 @@ double** compute_data_matrix(char *filename, int n, int d){
         }
     }
     fp = fopen(filename, "r");
+    if (fp ==NULL){
+        perror("Failed to read line (line 111)");
+        exit(1);
+    }
+    i=0;
     while (fgets(line, sizeof(line), fp) != NULL){
-        while((ch = fgetc(fp)) != '\n'){
-       if (ch == ','){
-
-       }
+        buffer_index = 0;
+        j = 0;
+        for (k = 0; line[k] != '\0'; k++){
+            ch = line[k];
+            if (ch == ','){
+                buffer[buffer_index] = '\0';
+                mat[i][j++] = atof(buffer);
+                buffer_index = 0;
+            } else {
+                buffer[buffer_index++] = ch;
+            }
+        }
+        if (buffer_index > 0){
+            buffer[buffer_index] = '\0';
+            mat[i][j++] = atof(buffer);
+        }
+        i++;
     }
 
-
+    fclose(fp);
+    return mat;
 }
 
 
