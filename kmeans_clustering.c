@@ -19,17 +19,18 @@ float* K_means(K, iter=200, input_data.txt){
     
     return centroids!!
  */
-
-int k_means(int k, int iter, char* filename);
-void is_valid_input(int k, int iter);
-double** compute_data_matrix(char *filename, int n, int d);
 int compute_d(char *filename);
 int compute_n(char *filename);
-double** copy_first_k_elements(double** read_matrix, double**write_matrix int k, int d);
+double** compute_data_matrix(char *filename, int n, int d);
+void copy_matrix(double** read_matrix, double**write_matrix int k, int d);
 void free_matrix(double** matrix, int n);
+double vector_distance(double *x, double *y, int d);
+void find_closest_point(double* vector, double** centroids, int* vectors_per_cluster, double **clusters, int k, int d);
+double** create_matrix(int rows, int columns);
+void update_centroids(double **centroids, int *vectors_per_cluster, double **clusters, int k, int d);
 int convergence(double** centroids, double** before, int curr_iter, int max_iter, int k, int d);
-double** alloc_memory_to_matrix(double** matrix, int rows, int columns, const char *error_msg);
-// for testings:
+void clear_matrix(double **clusters, int *vectors_per_cluster, int k, int d);
+int k_means(int k, int iter, char* filename);
 void print_matrix(double** matrix, int n, int d);
 
 /* Calculating d - vector size */
@@ -70,10 +71,6 @@ int compute_n(char *filename){
 /**
  * @brief Reads a file and stores data points in a matrix.
  *
- * This function reads an input file containing `n` rows and `d` columns of data points,
- * separated by commas. It allocates memory for an n*d matrix and fills it with 
- * the data points.
- *
  * @param filename The name of the file to read.
  * @param n The number of rows.
  * @param d The number of columns.
@@ -83,7 +80,7 @@ int compute_n(char *filename){
 double** compute_data_matrix(char *filename, int n, int d){
     FILE *fp;
     int i,j, buffer_index, k;
-    double** mat = alloc_memory_to_matrix(mat, n, d, "Failed to allocate memory to data matrix (line 85)");
+    double** mat = create_matrix(n, d);
     char line[255];
     char buffer[50];
     char ch;
@@ -120,10 +117,6 @@ double** compute_data_matrix(char *filename, int n, int d){
 /**
  * @brief Copies the first k rows from a matrix to a new k*d matrix.
  *
- * This function copies the first `k` rows from the given matrix
- * with `d` columns into another matrix of size `k*d` at least.
- * It returns a pointer to the new matrix.
- *
  * @param read_matrix The matrix from which you read.
  * @param write_matrix The matrix to which you write.
  * @param k The number of rows to copy.
@@ -131,17 +124,18 @@ double** compute_data_matrix(char *filename, int n, int d){
  * 
  * @return A pointer to the new k*d matrix.
  */
-double** copy_first_k_elements(double** read_matrix, double**write_matrix, int k, int d){
+void copy_matrix(double** read_matrix, double**write_matrix, int k, int d){
     int i, j;
     for (i =0; i< k; i++){
         for (int j=0; j<d; j++){
             write_matrix[i][j] = read_matrix[i][j];
         }
     }
-    return write_matrix;
 }
    
-//Print matrix - just to check correctness of code  
+/**
+ * @brief prints the matrix
+ */ 
 void print_matrix(double** matrix, int n, int d){
     int i, j;
     for(i=0; i<n; i++){
@@ -152,7 +146,9 @@ void print_matrix(double** matrix, int n, int d){
     }
 }
 
-//Free the allocated memory
+/**
+ * @brief free the allocated memory of a given matrix
+ */ 
 void free_matrix(double** matrix, int n){
     int i;
     for (i = 0; i < n; i++) {
@@ -162,6 +158,15 @@ void free_matrix(double** matrix, int n){
     
 }
 
+/**
+ * @brief Calculates the Euclidean distance between two vectors.
+ *
+ * @param x The first vector.
+ * @param y The second vector.
+ * @param d The dimension of the vectors.
+ * 
+ * @return The Euclidean distance between the two vectors.
+ */
 double vector_distance(double *x, double *y, int d){
     double res;
     int i;
@@ -173,7 +178,21 @@ double vector_distance(double *x, double *y, int d){
     return res;
 }
 
-void find_closest_point(double* vector, double** centroids, int* vectors_per_cluster, double **clusters, int d, int k){
+/**
+ * @brief Finds the closest centroid to a given vector and updates the cluster.
+ *
+ * Finds the closest centroid from the given `vector` among `k` centroids,
+ * updates the count of vectors per cluster, and accumulates the vector to the relevant cluster.
+ *
+ * @param vector The vector for which to find the closest centroid.
+ * @param centroids The matrix of centroids.
+ * @param vectors_per_cluster The array holding the count of vectors in each cluster.
+ * @param clusters The matrix to accumulate the vectors in each cluster.
+ * @param k The number of centroids/clusters.
+ * @param d The dimension of each vector.
+ */
+
+void find_closest_point(double* vector, double** centroids, int* vectors_per_cluster, double **clusters, int k, int d){
     int i, j, min_index;
     double dist;
     double min = INFINITY;
@@ -190,52 +209,150 @@ void find_closest_point(double* vector, double** centroids, int* vectors_per_clu
     }
 }
 
-double** alloc_memory_to_matrix(double** matrix, int rows, int columns, const char *error_msg){
+/**
+ * @brief Allocates memory for a matrix and returns a pointer to it.
+ *
+ * @param matrix The matrix to be created.
+ * @param rows The number of rows.
+ * @param columns The number of columns.
+ * @param error_msg The error message to print if allocation fails.
+ * 
+ * @return A pointer to the allocated matrix.
+ */
+
+double** create_matrix(int rows, int columns){
     int i;
     double **matrix = malloc(sizeof(double*) * rows);
     if (matrix == NULL){
-        perror(error_msg);
+        perror("Failed to allocate memory to matrix");
         exit(1);
     }
     for (i=0; i<rows; i++){
         matrix[i] = malloc(sizeof(double) * columns);
         if (matrix[i] == NULL){
-            perror(error_msg);
+            perror("Failed to allocate memory to matrix");
             exit(1);
         }
     }
     return matrix;
 }
 
+/**
+ * @brief Updates the centroids to be the mean of each corresponding cluster.
+ *
+ * @param centroids The matrix of centroids to be updated.
+ * @param vectors_per_cluster The array holding the amount of vectors in each cluster.
+ * @param clusters The matrix containing the sum of vectors in each cluster.
+ * @param k The number of centroids/clusters.
+ * @param d The dimension of each vector.
+ */
+void update_centroids(double **centroids, int *vectors_per_cluster, double **clusters, int k, int d){
+    int i,j;
+    for(i =0; i < k; i++){
+        for(j = 0; j < d; j++){
+            centroids[i][j] = (clusters[i][j] / vectors_per_cluster[i]);
+        }
+    }
+}
+
+/**
+ * @brief Checks if the centroids have converged or the maximum iterations have been reached.
+ *
+ * @param centroids The current centroids.
+ * @param prev_centroids The centroids from the previous iteration.
+ * @param curr_iter The current iteration number.
+ * @param iter The maximum number of iterations allowed.
+ * @param k The number of centroids/clusters.
+ * @param d The dimension of each vector.
+ * 
+ * @return 1 if the centroids have converged or the maximum iterations have been reached, otherwise 0.
+ */
+int convergence(double **centroids, double **prev_centroids, int curr_iter, int iter, int k, int d){
+    int i;
+    double dist;
+    if (curr_iter >= iter){
+        return 1;
+    }
+    for (i =0; i<k; i++){
+        dist = vector_distance(centroids[i], prev_centroids[i], d);
+        if (dist >= 0.001){
+            return 0;
+        }
+    }
+    return 1;
+}
+
+/**
+ * @brief Resets the vectors_per_cluster count and the clusters matrix.
+ *
+ * @param clusters The matrix of clusters to be cleared.
+ * @param vectors_per_cluster The array holding the count of vectors in each cluster.
+ * @param k The number of clusters.
+ * @param d The dimension of each vector.
+ */
+void clear_matrix(double **clusters, int *vectors_per_cluster, int k, int d){
+    int i ,j;
+    for (i =0; i < k; i++){
+        vectors_per_cluster[i] = 0;
+        for (j=0; j<d; j++){
+            clusters[i][j] = 0.0;
+        }
+    }
+}
+
 int k_means(int k, int iter, char* filename){
-    int i, j;
+    int i, j, curr_iter;
     int d = compute_d(filename);
     int n = compute_n(filename);
-    double **data_matrix, **centroids, **clusters;
+    double *vector;
+    double **data_matrix, **centroids, **clusters, **prev_centroids;
     int *vectors_per_cluster;
 
+    // check if k <= n
+    if (k > n){
+        perror("Invalid number of clusters!")
+        exit(1);
+    }
     //allocate memory for the centroids matrix
-    centroids = alloc_memory_to_matrix(centroids, k, d, "Failed to allocate memory to centroids matrix");
+    centroids = create_matrix(k, d);
 
     //allocate memory for the cluster matrix
-    clusters = alloc_memory_to_matrix(clusters, k, d), "Failed to allocate memory to clusters matrix";
+    clusters = create_matrix(k, d);
+
+    //allocate memory for the prev_clusters matrix
+    prev_centroids = create_matrix(k, d);
 
     //allocate memory for the vectors_per_cluster matrix
     vectors_per_cluster = malloc(sizeof(int) * k);
     if (vectors_per_cluster == NULL) {
-        perror("Failed to allocate memory to vectors_per_cluster matrix")
+        perror("Failed to allocate memory matrix")
         exit(1);
     }
 
 
 
     data_matrix = compute_data_matrix(filename, n, d);
-    centroids = copy_first_k_elements(data_matrix, centroids, k, d);
+    copy_matrix(data_matrix, centroids, k, d);
 
+    curr_iter = 0;
+    while (!convergence(centroids, prev_centroids, curr_iter, iter, k, d)){
+        clear_matrix(clusters, vectors_per_cluster, k, d);
+        for (i = 0; i < n; i++){
+            vector = data_matrix[i];
+            find_closest_point(vector, centroids, vectors_per_cluster, clusters, k, d);
+        }
+        copy_matrix(centroids, prev_centroids, k, d);
+        update_centroids(centroids, vectors_per_cluster, clusters, k, d);
+        curr_iter++;
+    }
 
+    free_matrix(prev_centroids, k);
+    free_matrix(clusters, k);
     free_matrix(data_matrix, n);
+    free(vectors_per_cluster);
 
     print_matrix(centroids);
+    free_matrix(centroids, k);
 
     return 0;
 }
@@ -251,14 +368,21 @@ int main(int argc, char** argv){
         return 1;
     }
     else if (argc == 4){
-        k = atoi(argv[1]); 
-        iter = atoi(argv[2]); 
+        iter = atoi(argv[2]);
+        if (iter != atof(argv[2]) || iter <= 0 || iter > 1000){
+            perror("Invalid maximum iteration!");
+            return 1;
+        }
         filename = argv[3];
     }
-    else if (argc == 3){
-        k = atoi(argv[1]); 
+    else if (argc == 3){ 
         iter = 200;
         filename = argv[2];
+    }
+    k = atoi(argv[1]);
+    if (k != atof(argv[1]) || k < 1){
+        perror("Invalid number of clusters!");
+        return 1;
     }
     k_means(k, iter, filename);
     return 0;
