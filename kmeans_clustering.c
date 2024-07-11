@@ -2,27 +2,10 @@
 #include <stdlib.h>
 #include <math.h>
 
-/* PLAN:
-float* K_means(K, iter=200, input_data.txt){
-    make_sure_input_is_valid()  
-    compute_d(f) #number of columms (V)
-    compute n (V)
-    put_in_matrix size N*d #use %4f to make sure inputs/outputs are at most 4 decimal places. (V)
-
-    init_initial_centroids(matrix) (inital centroids(matrix of size k*d) as first k data points
-
-    While (convergence(centroids) OR iteration_number > iter:
-        for each data_point:
-            find_closest_centroid(x,centroids)
-        
-        update_centroids (u_k= mean(u))
-    
-    return centroids!!
- */
 int compute_d(char *filename);
 int compute_n(char *filename);
 double** compute_data_matrix(char *filename, int n, int d);
-void copy_matrix(double** read_matrix, double**write_matrix int k, int d);
+void copy_matrix(double **read_matrix, double**write_matrix int k, int d);
 void free_matrix(double** matrix, int n);
 double vector_distance(double *x, double *y, int d);
 void find_closest_point(double* vector, double** centroids, int* vectors_per_cluster, double **clusters, int k, int d);
