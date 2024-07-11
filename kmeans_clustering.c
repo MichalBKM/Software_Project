@@ -5,7 +5,7 @@
 int compute_d(char *filename);
 int compute_n(char *filename);
 double** compute_data_matrix(char *filename, int n, int d);
-void copy_matrix(double **read_matrix, double**write_matrix int k, int d);
+void copy_matrix(double **read_matrix, double**write_matrix, int k, int d);
 void free_matrix(double** matrix, int n);
 double vector_distance(double *x, double *y, int d);
 void find_closest_point(double* vector, double** centroids, int* vectors_per_cluster, double **clusters, int k, int d);
@@ -14,7 +14,7 @@ void update_centroids(double **centroids, int *vectors_per_cluster, double **clu
 int convergence(double** centroids, double** before, int curr_iter, int max_iter, int k, int d);
 void clear_matrix(double **clusters, int *vectors_per_cluster, int k, int d);
 int k_means(int k, int iter, char* filename);
-void print_matrix(double** matrix, int n, int d);
+void print_matrix(double** matrix, int rows, int columns);
 
 /* Calculating d - vector size */
 int compute_d(char *filename){
@@ -119,10 +119,10 @@ void copy_matrix(double** read_matrix, double**write_matrix, int k, int d){
 /**
  * @brief prints the matrix
  */ 
-void print_matrix(double** matrix, int n, int d){
+void print_matrix(double** matrix, int rows, int columns){
     int i, j;
-    for(i=0; i<n; i++){
-        for(j=0;j<d;j++){
+    for(i=0; i<rows; i++){
+        for(j=0;j<columns;j++){
             printf("%.4f ", matrix[i][j]);
         }
         printf("\n");
@@ -334,7 +334,7 @@ int k_means(int k, int iter, char* filename){
     free_matrix(data_matrix, n);
     free(vectors_per_cluster);
 
-    print_matrix(centroids);
+    print_matrix(centroids, k, d);
     free_matrix(centroids, k);
 
     return 0;
