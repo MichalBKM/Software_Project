@@ -1,4 +1,5 @@
 import math
+import sys
 
 #reads a txt file and convert it to a 2d array V
 def create_data_matrix(filename):
@@ -79,6 +80,18 @@ def k_means(k, iter, filename):
     print_matrix(centroids)
     return 0
 
+if __name__ == "__main__":
+    if len(sys.argv) < 3 or len(sys.argv) > 4:
+        print("Invalid Input!")
+        exit(1)
 
-if __name__== "__main__":
-    k_means(3, 600, 'input_1.txt')
+    k = int(sys.argv[1])  
+    if k != float(sys.argv[1]):
+        print("Invalid number of clusters!")
+        exit(1) 
+    iter = int(sys.argv[2]) if len(sys.argv) == 4 else 200  
+    if len(sys.argv) == 4 and iter != float(iter):
+        print("Invalid maximum iteration!")
+        exit(1)
+    filename = sys.argv[3] if len(sys.argv) == 4 else sys.argv[2]
+    k_means(k, iter, filename)
