@@ -103,7 +103,10 @@ void print_matrix(double** matrix, int rows, int columns){
     int i, j;
     for(i=0; i<rows; i++){
         for(j=0;j<columns;j++){
-            printf("%.4f ", matrix[i][j]);
+            if(j<columns-1)
+                printf("%.4f,", matrix[i][j]);
+            else
+                printf("%.4f", matrix[i][j]);
         }
         printf("\n");
     }
