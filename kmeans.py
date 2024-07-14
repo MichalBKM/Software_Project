@@ -11,7 +11,6 @@ def create_data_matrix(filename):
     file.close()
     return matrix
 
-#fix this to be the same as the output needed in the assignment
 def print_matrix(mat):
     for row in mat:
         print(','.join(f'{value:.4f}' for value in row))
@@ -26,7 +25,7 @@ def vector_distance(x,y):
     res = math.sqrt(res)
     return res
 
-#void
+
 def find_closest_point(vector, centroids, clusters, k):
     min_index = 0
     minimum = float('inf') #infinity
@@ -44,7 +43,6 @@ def update_centroids(clusters, k):
     return new_centroids
 
 
-#boolean True \ False
 def convergence(centroids, prev_centroids, curr_iter, iter, k):
     if (curr_iter >= iter):
         return True
@@ -63,8 +61,8 @@ def k_means(k, iter, filename):
     assert iter>1 and iter<1000, "Invalid maximum iteration!"
 
     d = len(data_matrix[0])
-    centroids = [data_matrix[i] for i in range(k)] #initialize centroids as first k datapoints
-    #print("centroids:\n", centroids)
+    centroids = [data_matrix[i] for i in range(k)]
+  
     prev_centroids = [[float('inf') for _ in range(d)] for _ in range(k)]
     curr_iter = 0
 
@@ -76,7 +74,6 @@ def k_means(k, iter, filename):
         centroids = update_centroids(clusters, k)
         curr_iter += 1
 
-    print("\ncentroids:")
     print_matrix(centroids)
     return 0
 
