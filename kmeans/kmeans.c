@@ -275,7 +275,7 @@ int k_means(int k, int iter){
     int *vectors_per_cluster;
 
 
-    if (k > n){
+    if (k >= n){
         fprintf(stderr, "Invalid number of clusters!");
         exit(1);
     }
@@ -334,7 +334,7 @@ int main(int argc, char** argv){
     }
     else if (argc == 3){
         iter = atoi(argv[2]);
-        if (iter != atof(argv[2]) || iter <= 0 || iter > 1000){
+        if (iter != atof(argv[2]) || iter <= 1 || iter >= 1000){
             fprintf(stderr, "Invalid maximum iteration!");
             return 1;
         }
@@ -343,7 +343,7 @@ int main(int argc, char** argv){
         iter = 200;
     }
     k = atoi(argv[1]);
-    if (k != atof(argv[1]) || k < 1){
+    if (k != atof(argv[1]) || k <= 1){
         fprintf(stderr, "Invalid number of clusters!");
         return 1;
     }

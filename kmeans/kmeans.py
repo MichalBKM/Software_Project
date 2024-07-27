@@ -77,18 +77,28 @@ def k_means(k, iter, filename):
     print_matrix(centroids)
     return 0
 
-if __name__ == "__main__":
-    if len(sys.argv) < 3 or len(sys.argv) > 4:
-        print("Invalid Input!")
-        exit(1)
 
-    k = int(sys.argv[1])  
-    if k != float(sys.argv[1]):
+if __name__ == "__main__":
+    try:
+        if len(sys.argv) < 3 or len(sys.argv) > 4:
+            print("An Error Has Ocucurred")
+            exit(1)
+        k = int(sys.argv[1])  
+        if k != float(sys.argv[1]):
+            print("Invalid number of clusters!")
+            exit(1) 
+    except ValueError:
         print("Invalid number of clusters!")
-        exit(1) 
-    iter = int(sys.argv[2]) if len(sys.argv) == 4 else 200  
-    if len(sys.argv) == 4 and iter != float(iter):
+        exit(1)
+    try:
+        iter = int(sys.argv[2]) if len(sys.argv) == 4 else 200  
+        if len(sys.argv) == 4 and iter != float(iter):
+            print("Invalid maximum iteration!")
+            exit(1)
+        filename = sys.argv[3] if len(sys.argv) == 4 else sys.argv[2]
+        k_means(k, iter, filename)
+    except ValueError:
         print("Invalid maximum iteration!")
         exit(1)
-    filename = sys.argv[3] if len(sys.argv) == 4 else sys.argv[2]
-    k_means(k, iter, filename)
+
+        
