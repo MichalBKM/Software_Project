@@ -10,7 +10,8 @@ if __name__ == '__main__':
 
     # For demonstration, let's create a sample dataset
     np.random.seed(0)
-    data = load_iris()  # 100 data points with 2 features
+    iris = load_iris()
+    data = iris.data
 
     # Define the range for k
     k_values = range(1, 11)
