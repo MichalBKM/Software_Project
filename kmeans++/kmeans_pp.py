@@ -76,12 +76,13 @@ if __name__ == '__main__':
         print("Invalid Input!")
         exit(1)
 
+
     k = int(sys.argv[1])
-    if k != float(sys.argv[1]):
+    if k != float(sys.argv[1]) or not isinstance(k, (float, int)):
         print("Invalid number of clusters!")
         exit(1)
     iter = int(sys.argv[2]) if len(sys.argv) == 6 else 300
-    if len(sys.argv) == 6 and iter != float(iter):
+    if not isinstance(iter, (float, int)) or iter != float(iter):
         print("Invalid maximum iteration!")
         exit(1)
     eps = float(sys.argv[3]) if len(sys.argv) == 6 else float(sys.argv[2])
