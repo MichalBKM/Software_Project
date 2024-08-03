@@ -42,6 +42,8 @@ def kmeans_pp(k, iter, eps, file_name_1, file_name_2):
     indices = []
     # print("datapoints:\n",datapoints)
     n = len(datapoints)
+    if n < k or k<1:
+        print_error_and_exit("Invalid number of clusters!")
     index = np.random.randint(0, n)
     indices.append(index)
     centroids = np.array(
@@ -70,23 +72,35 @@ def print_matrix(mat):
     for row in mat:
         print(','.join(f'{value:.4f}' for value in row))
 
-# fix with try-except like Aviv did in HW1
+def print_error_and_exit(msg):
+    print(msg)
+    exit(1)
+
 if __name__ == '__main__':
     if len(sys.argv) < 5 or len(sys.argv) > 6:
-        print("Invalid Input!")
-        exit(1)
+        print_error_and_exit("Invalid Input!")
+    try:
+        k = int(sys.argv[1])
+        if k != float(sys.argv[1]) or not isinstance(k, (float, int)):
+            print_error_and_exit("Invalid number of clusters!")
+    except ValueError:
+        print_error_and_exit("Invalid number of clusters!")
+    try:
+        maxIter = int(sys.argv[2]) if len(sys.argv) == 6 else 300
+        if not isinstance(maxIter, (float, int)) or maxIter != float(maxIter):
+            print_error_and_exit("Invalid maximum iteration!")
+        elif maxIter < 0 or maxIter > 1000:
+            print_error_and_exit("Invalid maximum iteration!")
+    except ValueError:
+        print_error_and_exit("Invalid maximum iteration!")
+    try:
+        eps = float(sys.argv[3]) if len(sys.argv) == 6 else float(sys.argv[2])
+        if eps < 0:
+            print_error_and_exit("Invalid epsilon!")
+    except ValueError:
+        print_error_and_exit("Invalid epsilon!")
 
-
-    k = int(sys.argv[1])
-    if k != float(sys.argv[1]) or not isinstance(k, (float, int)):
-        print("Invalid number of clusters!")
-        exit(1)
-    iter = int(sys.argv[2]) if len(sys.argv) == 6 else 300
-    if not isinstance(iter, (float, int)) or iter != float(iter):
-        print("Invalid maximum iteration!")
-        exit(1)
-    eps = float(sys.argv[3]) if len(sys.argv) == 6 else float(sys.argv[2])
     file_name_1 = sys.argv[4] if len(sys.argv) == 6 else sys.argv[3]
     file_name_2 = sys.argv[5] if len(sys.argv) == 6 else sys.argv[4]
-    kcentroids = kmeans_pp(k, iter, eps, file_name_1, file_name_2)
+    kcentroids = kmeans_pp(k, maxIter, eps, file_name_1, file_name_2)
     print_matrix(kcentroids)

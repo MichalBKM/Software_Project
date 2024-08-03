@@ -105,6 +105,7 @@ void find_closest_point(double* vector, double** centroids, int* vectors_per_clu
     int i, j, min_index;
     double dist;
     double min = HUGE_VAL;
+    min_index = -1;
     for (i=0; i<k ; i++){
         dist = vector_distance(vector, centroids[i], d);
         if (dist < min){
