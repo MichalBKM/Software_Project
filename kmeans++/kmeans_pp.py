@@ -42,7 +42,7 @@ def kmeans_pp(k, iter, eps, file_name_1, file_name_2):
     indices = []
     # print("datapoints:\n",datapoints)
     n = len(datapoints)
-    if n <= k or k <= 1:
+    if n < k or k<=1:
         print_error_and_exit("Invalid number of clusters!")
     index = np.random.randint(0, n)
     indices.append(index)
