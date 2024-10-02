@@ -3,6 +3,18 @@
 #include <math.h>
 #include <string.h>
 
+int compute_d(FILE* file);
+int compute_n(FILE* file);
+double** compute_data_matrix(FILE* file, int n, int d);
+double** create_matrix(int rows, int columns);
+void free_matrix(double** matrix, int n);
+void print_matrix(double** matrix, int rows, int columns);
+double vector_distance(double *x, double *y, int d);
+double** sym(double** mat, int n, int d);
+double** ddg(double** A, int n);
+double** norm(double** D, double** A, int n);
+
+
 int compute_d(FILE* file){
     int d = 0;
     char ch;
