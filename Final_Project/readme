@@ -1,11 +1,11 @@
-### *Steps:* ###
-# 1. smynmf.c: C interface of your code #
+# *Steps:* #
+## 1. smynmf.c: C interface of your code ##
 The C code works well (sym, ddg, norm - OK)
-# 2. symnmfmodule.c: Python-C API Wrapper #
+## 2. symnmfmodule.c: Python-C API Wrapper ##
 Aviv
-# 3. symnmf.py: Python interface of your code #
+## 3. symnmf.py: Python interface of your code ##
 wrote the basics, after finishing the module we can finish it.
-# 4. symnmf.h: C header file #
-# 5. setup.py #
-# 6. Makefile #
-# 7. analysis.py: Analyze the algorithm #
+## 4. symnmf.h: C header file ##
+## 5. setup.py ##
+## 6. Makefile ##
+## 7. analysis.py: Analyze the algorithm ##
