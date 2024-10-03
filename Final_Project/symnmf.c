@@ -120,7 +120,8 @@ double** sym(double** mat, int n, int d){
     int i,j;
     for(i=0; i<n; i++){
         for(j=0; j<n; j++){
-            A[i][j] = exp(-(pow(vector_distance(mat[i],mat[j],d),2))/2);
+            if (i!=j) { A[i][j] = exp(-(pow(vector_distance(mat[i],mat[j],d),2))/2); }
+            else { A[i][j] = 0; }
         }
     }
     return A;
@@ -146,20 +147,19 @@ double** norm(double** D, double** A, int n){
         exit(1);
     }
 
-    int i, j;
+    int i, j, k;
     for (i=0; i<n; i++){
         if (D[i][i]!=0) { D_inv_sqrt[i] = (1.0 / sqrt(D[i][i])); }
-        else { D_inv_sqrt[i] =0; }
+        else { D_inv_sqrt[i] = 0; }
     }
-    
-    for (int i = 0; i<n; i++) {
-        for (int j = 0; j<n; j++) {
-            W[i][j] = 0;
-            for (int k = 0; k<n; k++) {
-                W[i][j] += D_inv_sqrt[i] * A[i][k] * D_inv_sqrt[j]; // Matrix multiplication
-            }
+
+    for (i=0; i<n; i++){
+        for (j=0; j<n; j++){
+                W[i][j] = D_inv_sqrt[i] * A[i][j] * D_inv_sqrt[j];
         }
     }
+    
+    free(D_inv_sqrt);
     return W;
 }
 
@@ -175,7 +175,7 @@ int main(int argc, char** argv){
 
     FILE *file = fopen(file_name, "r");
     if (file == NULL) {
-        fprintf(stderr, "An Error Has Occurred\n");
+        fprintf(stderr, "An Error Has Occurred (File Reading Error)\n");
         return 1;
     }
 
