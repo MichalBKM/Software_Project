@@ -14,7 +14,12 @@ double** sym(double** mat, int n, int d);
 double** ddg(double** A, int n);
 double** norm(double** D, double** A, int n);
 
-
+/**
+ * @brief calculating d the vector size
+ * 
+ * @param file set of n datapoints in .txt file format
+ * @return int d The vector size
+ */
 int compute_d(FILE* file){
     int d = 0;
     char ch;
@@ -25,6 +30,12 @@ int compute_d(FILE* file){
     return d + 1; 
 }
 
+/**
+ * @brief Calculating n the number of lines
+ * 
+ * @param file Set of n datapoints in .txt file format
+ * @return int n The number of lines
+ */
 int compute_n(FILE* file){
     int n = 0;
     char line[255];
@@ -35,6 +46,14 @@ int compute_n(FILE* file){
     return n;
 }
 
+/**
+ * @brief Reads a .txt file and stores datapoints in a matrix
+ * 
+ * @param file Set of n datapoints in .txt file format
+ * @param n The number of rows
+ * @param d The number of columns
+ * @return double** mat A pointer to the allocated matrix
+ */
 double** compute_data_matrix(FILE* file, int n, int d){
     int i,j, buffer_index, k;
     double** mat = create_matrix(n, d);
@@ -65,6 +84,13 @@ double** compute_data_matrix(FILE* file, int n, int d){
     return mat;
 }
 
+/**
+ * @brief Allocates memory for a matrix and returns a pointer to it
+ * 
+ * @param rows The number of rows in the matrix
+ * @param columns The number of columns in the matrix
+ * @return double** matrix A pointer to the allocated matrix
+ */
 double** create_matrix(int rows, int columns){
     int i;
     double **matrix = malloc(sizeof(double*) * rows);
@@ -82,6 +108,12 @@ double** create_matrix(int rows, int columns){
     return matrix;
 }
 
+/**
+ * @brief Free the allocated memory of a given matrix
+ * 
+ * @param matrix A 2d array
+ * @param n The number of lines in the matrix
+ */
 void free_matrix(double** matrix, int n){
     int i;
     for (i = 0; i < n; i++) {
@@ -91,6 +123,13 @@ void free_matrix(double** matrix, int n){
     
 }
 
+/**
+ * @brief Gets a matrix and prints it
+ * 
+ * @param matrix A 2d array
+ * @param rows The number of rows in the matrix
+ * @param columns The number of colums in the matrix
+ */
 void print_matrix(double** matrix, int rows, int columns){
     int i, j;
     for(i=0; i<rows; i++){
@@ -104,6 +143,14 @@ void print_matrix(double** matrix, int rows, int columns){
     }
 }
 
+/**
+ * @brief Calculates the euclidean distance between two vectors of the same dimension
+ * 
+ * @param x The first vector
+ * @param y The second vector
+ * @param d The dimension of the vectors
+ * @return double res The euclidean distance between the two given vectors
+ */
 double vector_distance(double *x, double *y, int d){
     double res;
     int i;
@@ -115,6 +162,14 @@ double vector_distance(double *x, double *y, int d){
     return res;
 }
 
+/**
+ * @brief Gets a matrix and calculates the Similarity Matrix
+ * 
+ * @param mat Set of n datapoints
+ * @param n The number of lines in the matrix
+ * @param d The number of rows in the matrix
+ * @return double** A The similarity matrix (sym)
+ */
 double** sym(double** mat, int n, int d){
     double** A = create_matrix(n,n);
     int i,j;
@@ -127,6 +182,13 @@ double** sym(double** mat, int n, int d){
     return A;
 }
 
+/**
+ * @brief Calculates the diagonal dregree matrix 
+ * 
+ * @param A The Similarity Matrix
+ * @param n The number of lines in the matrix
+ * @return double** D the Diagonal Degree Matrix (ddg)
+ */
 double** ddg(double** A, int n){
     double** D = create_matrix(n,n);
     int i,j;
@@ -139,6 +201,14 @@ double** ddg(double** A, int n){
     return D;
 }
 
+/**
+ * @brief Gets a diagonal degree matrix and normalizing it
+ * 
+ * @param D A 2d array resembeling a diagonal degree matrix
+ * @param A A 2d array resembeling a similarity matrix
+ * @param n The number of lines in the matrix
+ * @return double** W The Normalized Similarity Matrix (norm)
+ */
 double** norm(double** D, double** A, int n){
     double** W = create_matrix(n,n);
     double* D_inv_sqrt = malloc(n * sizeof(double));
@@ -162,6 +232,7 @@ double** norm(double** D, double** A, int n){
     free(D_inv_sqrt);
     return W;
 }
+
 
 int main(int argc, char** argv){
     char* goal;
