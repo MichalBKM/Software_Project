@@ -61,7 +61,7 @@ double** compute_data_matrix(FILE* file, int n, int d){
     char buffer[50];
     char ch;
 
-    i=0;
+    i = 0;
     while (fgets(line, sizeof(line), file) != NULL){
         buffer_index = 0;
         j = 0;
@@ -204,8 +204,8 @@ double** ddg(double** A, int n){
 /**
  * @brief Gets a diagonal degree matrix and normalizing it
  * 
- * @param D A 2d array resembeling a diagonal degree matrix
- * @param A A 2d array resembeling a similarity matrix
+ * @param D A 2d array resembling a diagonal degree matrix
+ * @param A A 2d array resembling a similarity matrix
  * @param n The number of lines in the matrix
  * @return double** W The Normalized Similarity Matrix (norm)
  */
@@ -233,6 +233,158 @@ double** norm(double** D, double** A, int n){
     return W;
 }
 
+/**
+ * @brief Gets a matrix and transposes it
+ * 
+ * @param mat A 2D array resembling a matrix
+ * @param rows The number of rows in the matrix
+ * @param cols The number of columns in the matrix
+ * @return double** trans_mat the tranposed matrix
+ */
+double** transpose_matrix(double** mat, int rows, int cols){
+    double** trans_mat = create_matrix(rows, cols);
+    int i,j;
+    for (i=0; i<rows; i++){
+        for (j=0; j<cols; j++){
+            trans_mat[i][j] = mat[j][i];
+        }
+    }
+    return trans_mat;
+}
+
+/**
+ * @brief Gets two matrices and multiplies it
+ * 
+ * @param A the first matrix
+ * @param B the second matrix
+ * @param rows_A the number of rows in the first matrix
+ * @param cols_A the number of columns in the first matrix
+ * @param rows_B the number of rows in the second matrix
+ * @param cols_B the number of columns in the second matrix
+ * @return double** product_mat the product of multiplication
+ */
+double** multiply_matrices(double** A, double** B, int rows_A, int cols_A, int rows_B, int cols_B){
+    if (cols_A != rows_B){
+        fprintf(stderr, "An Error Has Occurred\n");
+        exit(1);
+    }
+    double** product_mat = create_matrix(rows_A, cols_B);
+    int i,j,k;
+    for(i=0;i<rows_A;i++){
+        for (j=0;j<cols_B;j++){
+            product_mat[i][j] = 0; //initialize all entries to zero
+            for (k=0; k<cols_A; k++){
+                product_mat[i][j] += A[i][k] * B[k][j];
+            }
+        }
+    }
+    return product_mat;
+}
+
+/**
+ * @brief Gets the initialized matrix H and the normalized similarity matrix W and updates H
+ * 
+ * @param H A 2D array resembling the initialized decomoposition matrix
+ * @param W A 2D array resembling the normalized similarity matrix
+ * @param n The number of rows in H, and the number of rows and columns in W
+ * @param k The number of columns in H
+ * @return double** new_H the updated matrix
+ */
+double** update_H(double** H, double** W, int n, int k){
+    double** WxH = multiply_matrices(W,H,n,n,n,k); //dimensions of WxH are n*k
+    double** Ht = transpose_matrix(H,n,k); //dimensions of H^t are k*n
+    double** HxHt = multiply_matrices(H,Ht,n,k,k,n); //dimensions of HxH^t are n*n
+    double** HHH = multiply_matrices(HxHt,H,n,n,n,k); //dimensions of HHH are n*n
+    double** new_H = create_matrix(n,k); //dimensions of new_H are n*k
+    int i,j;
+    for (i=0; i<n; i++){
+        for (j=0; j<k; j++){
+            new_H[i][j] = H[i][j] * (0.5 + 0.5*(WxH[i][j] / HHH[i][j]));
+        }
+    }
+    free_matrix(WxH,n);
+    free_matrix(Ht,k);
+    free_matrix(HxHt,n);
+    free_matrix(HHH,n);
+    return new_H;
+}
+
+/**
+ * @brief Gets two matrices A and B and calculates the difference A-B
+ * 
+ * @param A A 2D array resembling the first matrix (minuend)
+ * @param B A 2D array resembling the second matrix (subtahend)
+ * @param rows_A The number of rows in matrix A
+ * @param cols_A The number of columns in matrix A
+ * @param rows_B The number of rows in matrix B
+ * @param cols_B The number of columns in matrix B
+ * @return double** diff_mat the result of subraction
+ */
+double** subtract_matrices(double** A, double** B, int rows_A, int cols_A, int rows_B, int cols_B){
+    if(rows_A != rows_B || cols_A != cols_B || A == NULL || B == NULL){
+        fprintf(stderr, "An Error Has Occurred\n");
+        exit(1);
+    }
+    int i, j;
+    double** diff_mat = create_matrix(rows_A, cols_A);
+    for (i=0; i<rows_A; i++){
+        for (j=0; j<cols_A; j++){
+            diff_mat[i][j] = A[i][j] - B[i][j];
+        }
+    }
+    return diff_mat;
+}
+
+/**
+ * @brief Gets two matrices, calculates the frobenius norm of their difference
+ * 
+ * @param new_H A 2D array resembling the updated H matrix 
+ * @param H A 2D array resembling the old H matrix 
+ * @param n The number of rows in both matrices
+ * @param k The number of columns in both matrices
+ * @return double sqrt(norm) the desired value, which is the square root of the sum of the absolute squares of its elements
+ */
+double frobenius_norm(double** new_H, double** H, int n, int k){
+    int i,j;
+    double** diff_mat = subtract_matrices(new_H,H,n,k,n,k);
+    double norm = 0;
+    for (i=0; i<n; i++){
+        for (j=0; j<k; j++){
+            norm += pow(diff_mat[i][j],2);
+        }
+    }
+    free_matrix(diff_mat, n);
+    return sqrt(norm);
+}
+
+/**
+ * @brief Gets matrix H and matrix W and update H until convergence (or until max iteration number is reached)
+ * 
+ * @param H A 2D array resembling the initialized decomoposition matrix
+ * @param W A 2D array resembling the normalized similarity matrix
+ * @param n The number of rows in H, and the number of rows and columns in W
+ * @param k The number of columns in H
+ * @return double** H the desired updated matrix
+ */
+double** optimize_H(double** H, double** W, int n, int k){
+    int max_iter = 300;
+    int iter = 0;
+    double eps = 0.0001;
+    double** new_H;
+    while (iter < max_iter){
+        new_H = update_H(H, W, n, k);
+        if (new_H == NULL){
+            return NULL;
+        }
+        if (pow(frobenius_norm(new_H, H, n, k),2) < eps){
+            break;
+        }
+        free_matrix(H,n);
+        H = new_H;
+        iter++;
+    }
+    return H;
+}
 
 int main(int argc, char** argv){
     char* goal;
@@ -252,6 +404,7 @@ int main(int argc, char** argv){
 
     int d = compute_d(file);
     int n = compute_n(file);
+    rewind(file);
     double** data_matrix = compute_data_matrix(file,n,d);
     double** A = sym(data_matrix,n,d);
     double** D = ddg(A, n);
