@@ -1,13 +1,13 @@
 CC = gcc
-CFLAGS = -ansi  -Wall -Wextra -Werror -pedantic-errors
+CFLAGS = -ansi -Wall -Wextra -Werror -pedantic-errors -lm
 
 .PHONY: clean
 
-symnmf: symnmf.o
-	$(CC) -o symnmf symnmf.o $(CFLAGS)
-
-symnmf.o: symnmf.c symnmf.h
+symnmf: symnmf.o symnmf.h
+	$(CC) -o symnmf symnmf.o symnmf.h $(CFLAGS)
+	rm -f symnmf.o
+symnmf.o: symnmf.c
 	$(CC) -c symnmf.c $(CFLAGS)
 
 clean:
-	rm -f symnmf symnmf.o
+	rm -f symnmf
