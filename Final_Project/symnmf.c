@@ -4,6 +4,7 @@
 #include <math.h>
 
 #include "symnmf.h"
+
 /**
  * @brief Calculating d the vector size
  * 
@@ -429,7 +430,11 @@ int main(int argc, char** argv){
     fclose(file);
 
     result_matrix = compute_goals(data_matrix, goal, n, d);
-    CHECK_MATRIX(result_matrix);
+    if(result_matrix == NULL){
+        printf("An Error Has Occurred");
+        free_matrix(result_matrix,n);
+        return 1;
+    }
 
     print_matrix(result_matrix, n, n);
     free_matrix(result_matrix, n), free_matrix(data_matrix, n);
