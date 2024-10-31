@@ -16,30 +16,16 @@ def compute_data_matrix(filename):
     return matrix
 
 def print_matrix(matrix):
-    """Prints a matrix with 4 decimal places."""
+
     for row in matrix:
         print(",".join(f"{x:.4f}" for x in row))
 
 def initialize_H(n, k, W):
-    """
-    Initializes matrix H with random values in the range [0, 2 * sqrt(m / k)].
-    
-    Parameters:
-        n (int): Number of rows in H.
-        k (int): Number of columns in H (number of clusters).
-        W (numpy.ndarray): The normalized similarity matrix.
 
-    Returns:
-        numpy.ndarray: Initialized matrix H of size (n, k).
-    """
-
-    # Calculate the average of all entries in W
     m = np.mean(W)
 
-    # Determine the range for random initialization
     upper_bound = 2 * np.sqrt(m / k)
 
-    # Initialize H with random values from the uniform distribution in [0, upper_bound]
     H = np.random.uniform(0, upper_bound, (n, k))
 
     return H
@@ -64,10 +50,10 @@ if __name__ == "__main__":
         print_matrix(A)
     elif goal == 'ddg':
         D = symnmf.ddg(dataMatrix, n, d)
-        print(D)
+        print_matrix(D)
     elif goal == 'norm':
         W = symnmf.norm(dataMatrix, n, d)
-        print(W)
+        print_matrix(W)
     else:
         perror("Invalid Goal!")
         exit(1)

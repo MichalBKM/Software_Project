@@ -6,20 +6,11 @@
 #include <math.h>
 #include <string.h>
 
-/* Macro to validate if a Python object is a list */
-#define VALIDATE_LIST(obj) \
-    do { \
-        if (!PyList_Check(obj)) { \
-            PyErr_SetString(PyExc_TypeError, "Argument must be a valid matrix."); \
-            exit(1); \
-        } \
-    } while (0)
-
 /* Macro to check if a matrix is NULL */
 #define CHECK_MATRIX(mat) \
     do { \
         if ((mat) == NULL) { \
-            PyErr_SetString(PyExc_RuntimeError, "An Error Has Occurred"); \
+            fprintf(stderr, "Error: Matrix is NULL\n"); \
             exit(1); \
         } \
     } while (0)

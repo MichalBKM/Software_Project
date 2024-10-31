@@ -4,9 +4,17 @@
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
-#include <Python.h>
+#include <Python.h> 
 #include "symnmf.h"
 
+/* Macro to validate if a Python object is a list */
+#define VALIDATE_LIST(obj)  \
+    do { \
+        if (!(obj) || !PyList_Check(obj)) { \
+            printf("An Error Has Occurred!\n"); \
+            exit(1); \
+        } \
+    } while (0)
 
 static void PyObj_To_cMatrix(PyObject* pyMat, double **cMat, int rows, int columns)
 {
@@ -48,6 +56,7 @@ static PyObject* py_sym(PyObject *self, PyObject *args){
     if (!PyArg_ParseTuple(args, "Oii", &PyDataPoints, &n, &d)) {
         return NULL;
     }
+    VALIDATE_LIST(PyDataPoints);
     data_matrix = create_matrix(n, d);
     PyObj_To_cMatrix(PyDataPoints, data_matrix, n, d);
     A = sym(data_matrix, n, d);
@@ -67,6 +76,7 @@ static PyObject* py_ddg(PyObject *self, PyObject *args){
     if (!PyArg_ParseTuple(args, "Oii", &PyDataPoints, &n, &d)) {
         return NULL;
     }
+    VALIDATE_LIST(PyDataPoints);
     data_matrix = create_matrix(n, d);
     PyObj_To_cMatrix(PyDataPoints, data_matrix, n, d);
     A = sym(data_matrix, n, d);
@@ -87,6 +97,7 @@ static PyObject* py_norm(PyObject *self, PyObject *args){
     if (!PyArg_ParseTuple(args, "Oii", &PyDataPoints, &n, &d)) {
         return NULL;
     }
+    VALIDATE_LIST(PyDataPoints);
     data_matrix = create_matrix(n, d);
     PyObj_To_cMatrix(PyDataPoints, data_matrix, n, d);
     A = sym(data_matrix, n, d);
@@ -105,9 +116,12 @@ static PyObject* py_symnmf(PyObject *self, PyObject *args){
     PyObject *Py_W, *Py_H;
     PyObject *result_mat;
 
-    if (!PyArg_ParseTuple(args, "OOiii", &Py_W, &Py_H, &n, &d, &k)) {
+    if (!PyArg_ParseTuple(args, "OOiii", &Py_W, &Py_H, &n, &d, &k)) { /*Delete d as an argument */
         return NULL;
     }
+    VALIDATE_LIST(Py_W);
+    VALIDATE_LIST(Py_H);
+
     W = create_matrix(n, n);
     H = create_matrix(n, k);
     PyObj_To_cMatrix(Py_W, W, n, n);
@@ -133,14 +147,10 @@ static PyMethodDef symNMF_Methods[] = {
 
 static struct PyModuleDef symnmfmodule = {
     PyModuleDef_HEAD_INIT,
-    "symnmf", /* name of module */
-    NULL, /* module documentation, may be NULL */
-    -1,  /* size of per-interpreter state of the module, or -1 if the module keeps state in global variables. */
-    symNMF_Methods, /* the PyMethodDef array from before containing the methods of the extension */
-    NULL,
-    NULL,
-    NULL,
-    NULL
+    "symnmf",
+    NULL, 
+    -1,  
+    symNMF_Methods
 };
 
 PyMODINIT_FUNC PyInit_symnmf(void) {
