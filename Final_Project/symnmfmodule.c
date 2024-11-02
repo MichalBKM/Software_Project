@@ -12,6 +12,7 @@
     do { \
         if (!(obj) || !PyList_Check(obj)) { \
             printf("An Error Has Occurred!\n"); \
+            ERROR_MSG(7); \
             exit(1); \
         } \
     } while (0)
@@ -112,18 +113,20 @@ static PyObject* py_norm(PyObject *self, PyObject *args){
 static PyObject* py_symnmf(PyObject *self, PyObject *args){
     (void)self;
     double **W, **H;
-    int n, d, k;
+    int n, k;
     PyObject *Py_W, *Py_H;
     PyObject *result_mat;
 
-    if (!PyArg_ParseTuple(args, "OOiii", &Py_W, &Py_H, &n, &d, &k)) { /*Delete d as an argument */
+    if (!PyArg_ParseTuple(args, "OOii", &Py_W, &Py_H, &n, &k)) { /*Delete d as an argument */
         return NULL;
     }
+
     VALIDATE_LIST(Py_W);
     VALIDATE_LIST(Py_H);
 
     W = create_matrix(n, n);
     H = create_matrix(n, k);
+
     PyObj_To_cMatrix(Py_W, W, n, n);
     PyObj_To_cMatrix(Py_H, H, n, k);
 
@@ -147,13 +150,13 @@ static PyMethodDef symNMF_Methods[] = {
 
 static struct PyModuleDef symnmfmodule = {
     PyModuleDef_HEAD_INIT,
-    "symnmf",
+    "symnmfmodule",
     NULL, 
     -1,  
     symNMF_Methods
 };
 
-PyMODINIT_FUNC PyInit_symnmf(void) {
+PyMODINIT_FUNC PyInit_symnmfmodule(void) {
     PyObject *m;
     m = PyModule_Create(&symnmfmodule);
     if (!m) {

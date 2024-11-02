@@ -1,7 +1,7 @@
 import sys
 import math
 import numpy as np
-import symnmf
+import symnmfmodule
 
 np.random.seed(1234)
 
@@ -27,8 +27,10 @@ def initialize_H(n, k, W):
     upper_bound = 2 * np.sqrt(m / k)
 
     H = np.random.uniform(0, upper_bound, (n, k))
+    if H.ndim == 1:
+        H = H.reshape(1, -1)
 
-    return H
+    return H.tolist()
 
 
 if __name__ == "__main__":
@@ -41,18 +43,18 @@ if __name__ == "__main__":
     n = len(dataMatrix)
     
     if goal == 'symnmf':
-        W = symnmf.norm(dataMatrix, n, d)
+        W = symnmfmodule.norm(dataMatrix, n, d)
         H = initialize_H(n, k, W)
-        optimal_H = symnmf.symnmf(W, H, n, d, k)
+        optimal_H = symnmfmodule.symnmf(W, H, n, k)
         print_matrix(optimal_H)
     elif goal == 'sym':
-        A = symnmf.sym(dataMatrix, n, d)
+        A = symnmfmodule.sym(dataMatrix, n, d)
         print_matrix(A)
     elif goal == 'ddg':
-        D = symnmf.ddg(dataMatrix, n, d)
+        D = symnmfmodule.ddg(dataMatrix, n, d)
         print_matrix(D)
     elif goal == 'norm':
-        W = symnmf.norm(dataMatrix, n, d)
+        W = symnmfmodule.norm(dataMatrix, n, d)
         print_matrix(W)
     else:
         perror("Invalid Goal!")

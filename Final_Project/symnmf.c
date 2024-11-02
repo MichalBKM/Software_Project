@@ -87,12 +87,14 @@ double** create_matrix(int rows, int columns){
     double **matrix = malloc(sizeof(double*) * rows);
     if (matrix == NULL){
         fprintf(stderr, "An Error Has Occurred\n");
+        ERROR_MSG(1);
         exit(1);
     }
     for (i=0; i<rows; i++){
         matrix[i] = malloc(sizeof(double) * columns);
         if (matrix[i] == NULL){
             fprintf(stderr, "An Error Has Occurred\n");
+            ERROR_MSG(2);
             exit(1);
         }
     }
@@ -208,6 +210,7 @@ double** norm(double** D, double** A, int n){
 
     if (D_inv_sqrt == NULL) {
         fprintf(stderr, "An Error Has Occurred\n");
+        ERROR_MSG(3);
         exit(1);
     }
     for (i=0; i<n; i++){
@@ -234,11 +237,11 @@ double** norm(double** D, double** A, int n){
  * @return double** trans_mat The tranposed matrix
  */
 double** transpose_matrix(double** mat, int rows, int cols){
-    double** trans_mat = create_matrix(rows, cols);
+    double** trans_mat = create_matrix(cols, rows);
     int i,j;
     for (i=0; i<rows; i++){
         for (j=0; j<cols; j++){
-            trans_mat[i][j] = mat[j][i];
+            trans_mat[j][i] = mat[i][j];
         }
     }
     return trans_mat;
@@ -260,6 +263,7 @@ double** multiply_matrices(double** A, double** B, int rows_A, int cols_A, int r
     int i,j,k;
     if (cols_A != rows_B){
         fprintf(stderr, "An Error Has Occurred\n");
+        ERROR_MSG(4);
         exit(1);
     }
     product_mat = create_matrix(rows_A, cols_B);
@@ -318,6 +322,7 @@ double** subtract_matrices(double** A, double** B, int rows_A, int cols_A, int r
     double** diff_mat;
     if(rows_A != rows_B || cols_A != cols_B || A == NULL || B == NULL){
         fprintf(stderr, "An Error Has Occurred\n");
+        ERROR_MSG(5);
         exit(1);
     }
     diff_mat = create_matrix(rows_A, cols_A);
@@ -371,14 +376,14 @@ double** optimize_H(double** H, double** W, int n, int k){
             return NULL;
         }
         if (pow(frobenius_norm(new_H, H, n, k),2) < eps){
-            free_matrix(H,n); /* added this line */ 
-            return new_H; /* changed this from "break" */
+            free_matrix(H,n); 
+            return new_H; 
         } 
         free_matrix(H,n);
         H = new_H;
         iter++;
     }
-    return H;
+    return new_H;
 }
 
 double** compute_goals(double **data_matrix, const char *goal, int n, int d) {
@@ -431,7 +436,7 @@ int main(int argc, char** argv){
 
     result_matrix = compute_goals(data_matrix, goal, n, d);
     if(result_matrix == NULL){
-        printf("An Error Has Occurred");
+        ERROR_MSG(6); /*printf("An Error Has Occurred");*/
         free_matrix(result_matrix,n);
         return 1;
     }

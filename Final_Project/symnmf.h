@@ -15,6 +15,8 @@
         } \
     } while (0)
 
+#define ERROR_MSG(id) fprintf(stderr, "Error %d: An Error Has Occurred! Line: %d\n", id, __LINE__)
+
 
 /* Function declarations from symnmf.c */
 int compute_d(FILE* fp);
