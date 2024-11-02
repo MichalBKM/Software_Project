@@ -27,7 +27,7 @@ def main():
     symnmf_values = symnmf_clustering(dataMatrix, n, d, k)
     symnmf_score = silhouette_score(dataMatrix, symnmf_values)
 
-    symnmf_values = kmeans_clustering(...) #todo
+    kmeans_values = kmeans_clustering(...) #todo
     kmeans_score = silhouette_score(dataMatrix, kmeans_values)
 
     print(f"nmf: {symnmf_score: .4f}")
