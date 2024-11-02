@@ -6,16 +6,19 @@
 #include <math.h>
 #include <string.h>
 
+/* Constants */
+#define ERROR_MESSAGE "An Error Has Occurred"
+#define MAX_ITER 300
+#define EPSILON 1e-4
+
 /* Macro to check if a matrix is NULL */
 #define CHECK_MATRIX(mat) \
     do { \
         if ((mat) == NULL) { \
-            fprintf(stderr, "Error: Matrix is NULL\n"); \
+            fprintf(stderr, "%s\n", ERROR_MESSAGE); \
             exit(1); \
         } \
     } while (0)
-
-#define ERROR_MSG(id) fprintf(stderr, "Error %d: An Error Has Occurred! Line: %d\n", id, __LINE__)
 
 
 /* Function declarations from symnmf.c */

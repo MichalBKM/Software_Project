@@ -32,8 +32,7 @@ def initialize_H(n, k, W):
 
     return H.tolist()
 
-
-if __name__ == "__main__":
+def main():
     k = int(sys.argv[1])
     goal = sys.argv[2]
     file_name = sys.argv[3]
@@ -57,5 +56,9 @@ if __name__ == "__main__":
         W = symnmfmodule.norm(dataMatrix, n, d)
         print_matrix(W)
     else:
-        perror("Invalid Goal!")
+        perror("An Error Has Occurred")
         exit(1)
+
+
+if __name__ == "__main__":
+    main()

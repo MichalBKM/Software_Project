@@ -7,16 +7,22 @@
 #include <Python.h> 
 #include "symnmf.h"
 
-/* Macro to validate if a Python object is a list */
+/* Macro for an error message if the object is not a Python list */
 #define VALIDATE_LIST(obj)  \
     do { \
         if (!(obj) || !PyList_Check(obj)) { \
-            printf("An Error Has Occurred!\n"); \
-            ERROR_MSG(7); \
+            fprintf(stderr, "%s\n", ERROR_MESSAGE); \
             exit(1); \
         } \
     } while (0)
 
+/*
+ * Converts a Python list of lists (PyObject) into a C matrix (2D array).
+ * Parameters:
+ *   pyMat: The Python list object to convert.
+ *   cMat: The C matrix to populate.
+ *   rows, columns: Dimensions of the matrix.
+ */
 static void PyObj_To_cMatrix(PyObject* pyMat, double **cMat, int rows, int columns)
 {
     int i,j;
@@ -34,6 +40,13 @@ static void PyObj_To_cMatrix(PyObject* pyMat, double **cMat, int rows, int colum
     }
 }
 
+/*
+ * Converts a C matrix (2D array) to a Python list of lists (PyObject).
+ * Parameters:
+ *   cMat: The C matrix to convert.
+ *   rows, columns: Dimensions of the matrix.
+ * Returns: Python list of lists representation of the matrix.
+ */
 static PyObject* cMatrix_to_PyObject(double** cMat, int rows, int columns){
     int i, j;
     PyObject* PyMat = PyList_New(rows);
@@ -47,6 +60,11 @@ static PyObject* cMatrix_to_PyObject(double** cMat, int rows, int columns){
     return PyMat;
 }
 
+/*
+ * Python wrapper function for calculating the similarity matrix.
+ * Parameters: Python list of lists (data points), number of rows (n), and columns (d).
+ * Returns: Python list of lists representing the similarity matrix.
+ */
 static PyObject* py_sym(PyObject *self, PyObject *args){
     (void)self;
     double **data_matrix ,**A;
@@ -67,6 +85,11 @@ static PyObject* py_sym(PyObject *self, PyObject *args){
     return result_mat;
 }
 
+/*
+ * Python wrapper function for calculating the diagonal degree matrix.
+ * Parameters: Python list of lists (data points), number of rows (n), and columns (d).
+ * Returns: Python list of lists representing the diagonal degree matrix.
+ */
 static PyObject* py_ddg(PyObject *self, PyObject *args){
     (void)self;
     double **data_matrix ,**D, **A;
@@ -88,6 +111,11 @@ static PyObject* py_ddg(PyObject *self, PyObject *args){
     return result_mat;
 }
 
+/*
+ * Python wrapper function for calculating the normalized similarity matrix.
+ * Parameters: Python list of lists (data points), number of rows (n), and columns (d).
+ * Returns: Python list of lists representing the normalized similarity matrix.
+ */
 static PyObject* py_norm(PyObject *self, PyObject *args){
     (void)self;
     double **data_matrix ,**D, **A, **W;
@@ -110,6 +138,11 @@ static PyObject* py_norm(PyObject *self, PyObject *args){
     return result_mat;
 }
 
+/*
+ * Python wrapper function for performing symNMF on matrix W.
+ * Parameters: Python list of lists for W and H, number of rows (n), and clusters (k).
+ * Returns: Python list of lists representing the resulting H matrix.
+ */
 static PyObject* py_symnmf(PyObject *self, PyObject *args){
     (void)self;
     double **W, **H;

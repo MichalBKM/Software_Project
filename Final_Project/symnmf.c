@@ -366,16 +366,14 @@ double frobenius_norm(double** new_H, double** H, int n, int k){
  * @return double** H Updated matrix
  */
 double** optimize_H(double** H, double** W, int n, int k){
-    int max_iter = 300;
     int iter = 0;
-    double eps = 0.0001;
     double** new_H;
-    while (iter < max_iter){
+    while (iter < MAX_ITER){
         new_H = update_H(H, W, n, k);
         if (new_H == NULL){
             return NULL;
         }
-        if (pow(frobenius_norm(new_H, H, n, k),2) < eps){
+        if (pow(frobenius_norm(new_H, H, n, k),2) < EPSILON){
             free_matrix(H,n); 
             return new_H; 
         } 
