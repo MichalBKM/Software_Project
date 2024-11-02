@@ -1,45 +1,39 @@
 import sys
-import math
 import numpy as np
+import math
 import symnmfmodule
 import kmeans
-
 from sklearn.metrics import silhouette_score
 from symnmf import initialize_H, compute_data_matrix
 
-def mean_cluster(vector, cluster):
+def symnmf_clustering(dataMatrix, n, d, k):
+    W = symnmfmodule.norm(dataMatrix, n, d)
+    H = initialize_H(n, k, W)
+    optimal_H = symnmfmodule.symnmf(W, H, n, k) #calculate OPT h using W and init H
+    symnmf_indexes = np.argmax(optimal_H, axis=1)
+    return symnmf_indexes
 
-    return None
-
-#Retruns the closest centroid for given vector
-def closest_centroid(vector, centroids):
-    distances = np.linalg.norm(centroids - vector, axis=1)
-    return np.argmin(distances)
+def kmeans_clustering(dataMatrix, n, d, k):
+    #todo
 
 def main():
     k = int(sys.argv[1])
     file_name = sys.argv[2]
 
-    dataMatrix = compute_data_matrix(file_name)
-    d = len(dataMatrix[0])
+    dataMatrix = compute_data_matrix(file_name) #load data
     n = len(dataMatrix)
+    d = len(dataMatrix[0])
 
-    W = symnmfmodule.norm(dataMatrix, n, d)
-    H = initialize_H(n, k, W)
-    optimal_H = symnmfmodule.symnmf(W, H, n, k)
+    symnmf_values = symnmf_clustering(dataMatrix, n, d, k)
+    symnmf_score = silhouette_score(dataMatrix, symnmf_values)
 
-    cluster_indexes = np.argmax(optimal_H, axis=1)
-    #TODO: Compute centroids
-    #TODO: For each data point, compute the closest centroid to the data point which isn't the cluster its currently in
+    symnmf_values = kmeans_clustering(...) #todo
+    kmeans_score = silhouette_score(dataMatrix, kmeans_values)
 
-    sum = 0
-    for row in dataMatrix:
-        #TODO: a = ?
-        #TODO: b = ?
+    print(f"nmf: {symnmf_score: .4f}")
+    print(f"kmeans: {kmeans_score: .4f}")
 
-        silhouette_coefficient = (b-a)/max(a, b)
-        sum += silhouette_coefficient
-    
+
 
 if __name__ == "__main__":
     main()
