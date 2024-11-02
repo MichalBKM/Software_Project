@@ -86,15 +86,13 @@ double** create_matrix(int rows, int columns){
     int i;
     double **matrix = malloc(sizeof(double*) * rows);
     if (matrix == NULL){
-        fprintf(stderr, "An Error Has Occurred\n");
-        ERROR_MSG(1);
+        fprintf(stderr, "%s\n", ERROR_MESSAGE);
         exit(1);
     }
     for (i=0; i<rows; i++){
         matrix[i] = malloc(sizeof(double) * columns);
         if (matrix[i] == NULL){
-            fprintf(stderr, "An Error Has Occurred\n");
-            ERROR_MSG(2);
+            fprintf(stderr, "%s\n", ERROR_MESSAGE);
             exit(1);
         }
     }
@@ -209,8 +207,7 @@ double** norm(double** D, double** A, int n){
     int i, j;
 
     if (D_inv_sqrt == NULL) {
-        fprintf(stderr, "An Error Has Occurred\n");
-        ERROR_MSG(3);
+        fprintf(stderr, "%s\n", ERROR_MESSAGE);
         exit(1);
     }
     for (i=0; i<n; i++){
@@ -262,8 +259,7 @@ double** multiply_matrices(double** A, double** B, int rows_A, int cols_A, int r
     double** product_mat;
     int i,j,k;
     if (cols_A != rows_B){
-        fprintf(stderr, "An Error Has Occurred\n");
-        ERROR_MSG(4);
+        fprintf(stderr, "%s\n", ERROR_MESSAGE);
         exit(1);
     }
     product_mat = create_matrix(rows_A, cols_B);
@@ -321,8 +317,7 @@ double** subtract_matrices(double** A, double** B, int rows_A, int cols_A, int r
     int i, j;
     double** diff_mat;
     if(rows_A != rows_B || cols_A != cols_B || A == NULL || B == NULL){
-        fprintf(stderr, "An Error Has Occurred\n");
-        ERROR_MSG(5);
+        fprintf(stderr, "%s\n", ERROR_MESSAGE);
         exit(1);
     }
     diff_mat = create_matrix(rows_A, cols_A);
@@ -384,6 +379,15 @@ double** optimize_H(double** H, double** W, int n, int k){
     return new_H;
 }
 
+/**
+ * @brief Gets a data matrix, goal, n and d and returns the desired matrix based on the goal
+ * 
+ * @param data_matrix a matrix with n datapoints of size d
+ * @param goal The type of matrix to be calculated
+ * @param n Number of rows
+ * @param d Number of columns
+ * @return double** The desired matrix based on the given goal
+ */
 double** compute_goals(double **data_matrix, const char *goal, int n, int d) {
     double **A, **W, **D; 
     
@@ -405,7 +409,6 @@ double** compute_goals(double **data_matrix, const char *goal, int n, int d) {
     free_matrix(A, n), free_matrix(D, n);
     return W; 
 }
-
 
 
 
@@ -434,7 +437,7 @@ int main(int argc, char** argv){
 
     result_matrix = compute_goals(data_matrix, goal, n, d);
     if(result_matrix == NULL){
-        ERROR_MSG(6); /*printf("An Error Has Occurred");*/
+        fprintf(stderr, "%s\n", ERROR_MESSAGE);
         free_matrix(result_matrix,n);
         return 1;
     }

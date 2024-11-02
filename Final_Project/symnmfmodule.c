@@ -72,10 +72,15 @@ static PyObject* py_sym(PyObject *self, PyObject *args){
     PyObject *PyDataPoints;
     PyObject *result_mat;
 
-    if (!PyArg_ParseTuple(args, "Oii", &PyDataPoints, &n, &d)) {
+    if (!PyArg_ParseTuple(args, "O", &PyDataPoints)) {
         return NULL;
     }
     VALIDATE_LIST(PyDataPoints);
+
+    /* Calculate n and d based on PyDataPoints dimensions */
+    n = PyList_Size(PyDataPoints); 
+    d = n > 0 ? PyList_Size(PyList_GetItem(PyDataPoints, 0)) : 0;
+
     data_matrix = create_matrix(n, d);
     PyObj_To_cMatrix(PyDataPoints, data_matrix, n, d);
     A = sym(data_matrix, n, d);
@@ -97,12 +102,19 @@ static PyObject* py_ddg(PyObject *self, PyObject *args){
     PyObject *PyDataPoints;
     PyObject *result_mat;
 
-    if (!PyArg_ParseTuple(args, "Oii", &PyDataPoints, &n, &d)) {
+    if (!PyArg_ParseTuple(args, "O", &PyDataPoints)) {
         return NULL;
     }
     VALIDATE_LIST(PyDataPoints);
+
+    /* Calculate n and d based on PyDataPoints dimensions */
+    n = PyList_Size(PyDataPoints); 
+    d = n > 0 ? PyList_Size(PyList_GetItem(PyDataPoints, 0)) : 0;
+
     data_matrix = create_matrix(n, d);
     PyObj_To_cMatrix(PyDataPoints, data_matrix, n, d);
+
+
     A = sym(data_matrix, n, d);
     D = ddg(A ,n);
     result_mat = cMatrix_to_PyObject(D, n, n);
@@ -123,10 +135,15 @@ static PyObject* py_norm(PyObject *self, PyObject *args){
     PyObject *PyDataPoints;
     PyObject *result_mat;
 
-    if (!PyArg_ParseTuple(args, "Oii", &PyDataPoints, &n, &d)) {
+    if (!PyArg_ParseTuple(args, "O", &PyDataPoints)) {
         return NULL;
     }
     VALIDATE_LIST(PyDataPoints);
+
+    /* Calculate n and d based on PyDataPoints dimensions */
+    n = PyList_Size(PyDataPoints); 
+    d = n > 0 ? PyList_Size(PyList_GetItem(PyDataPoints, 0)) : 0;
+
     data_matrix = create_matrix(n, d);
     PyObj_To_cMatrix(PyDataPoints, data_matrix, n, d);
     A = sym(data_matrix, n, d);
