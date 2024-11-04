@@ -1,7 +1,9 @@
 import math
 import sys
 
-#reads a txt file and convert it to a 2d array V
+# Reads a txt file and converts it to a 2D array (matrix) of floats.
+# @param filename: Name of the file.
+# @return matrix:.
 def create_data_matrix(filename):
     file = open(filename, 'r')
     matrix = []
@@ -11,13 +13,18 @@ def create_data_matrix(filename):
     file.close()
     return matrix
 
+# Prints a 2D matrix with values formatted to 4 decimal places.
+# @param mat: 2D list of floats representing the matrix.
 def print_matrix(mat):
     for row in mat:
         print(','.join(f'{value:.4f}' for value in row))
 
 
-#calculating euclidean distance from two d-dimensional vectors V
-def vector_distance(x,y):
+# Calculates the Euclidean distance between two d-dimensional vectors.
+# @param x: First vector.
+# @param y: Second vector.
+# @return res: The Euclidean distance:
+def vector_distance(x, y):
     res = 0
     d = len(x)
     for i in range(d):
@@ -25,7 +32,11 @@ def vector_distance(x,y):
     res = math.sqrt(res)
     return res
 
-
+# Finds the closest centroid to a given vector and assigns it to a cluster.
+# @param vector: Data point to be assigned as a list of floats.
+# @param centroids: List of centroid vectors.
+# @param clusters: List of clusters, where each cluster is a list of vectors.
+# @param k: Number of clusters.
 def find_closest_point(vector, centroids, clusters, k):
     min_index = 0
     minimum = float('inf') #infinity
@@ -36,12 +47,15 @@ def find_closest_point(vector, centroids, clusters, k):
             minimum = dist
     clusters[min_index].append(vector)
 
+# Updates centroids based on the average of points in each cluster.
+# @param clusters: List of clusters with each cluster as a list of vectors.
+# @param k: Number of clusters.
+# @return new_centroids: Updated list of centroid vectors.
 def update_centroids(clusters, k):
     new_centroids = [] 
     for i in range(k):
         new_centroids.append([sum(column) / len(column) for column in zip(*clusters[i])])
     return new_centroids
-
 
 def convergence(centroids, prev_centroids, curr_iter, iter, k):
     if (curr_iter >= iter):
@@ -52,7 +66,12 @@ def convergence(centroids, prev_centroids, curr_iter, iter, k):
             return False
     return True
 
-
+# Implements the k-means clustering algo
+# rithm on a data matrix.
+# @param k: Number of clusters.
+# @param iter: Maximum number of iterations.
+# @param data_matrix: 2D list representing the data matrix.
+# @return centroids: Final centroids after clustering.
 def k_means(k, iter, data_matrix):
     
     n = len(data_matrix)

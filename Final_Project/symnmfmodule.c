@@ -66,7 +66,6 @@ static PyObject* cMatrix_to_PyObject(double** cMat, int rows, int columns){
  * Returns: Python list of lists representing the similarity matrix.
  */
 static PyObject* py_sym(PyObject *self, PyObject *args){
-    (void)self;
     double **data_matrix ,**A;
     int n, d;
     PyObject *PyDataPoints;
@@ -77,7 +76,6 @@ static PyObject* py_sym(PyObject *self, PyObject *args){
     }
     VALIDATE_LIST(PyDataPoints);
 
-    /* Calculate n and d based on PyDataPoints dimensions */
     n = PyList_Size(PyDataPoints); 
     d = n > 0 ? PyList_Size(PyList_GetItem(PyDataPoints, 0)) : 0;
 
@@ -96,7 +94,6 @@ static PyObject* py_sym(PyObject *self, PyObject *args){
  * Returns: Python list of lists representing the diagonal degree matrix.
  */
 static PyObject* py_ddg(PyObject *self, PyObject *args){
-    (void)self;
     double **data_matrix ,**D, **A;
     int n, d;
     PyObject *PyDataPoints;
@@ -108,7 +105,7 @@ static PyObject* py_ddg(PyObject *self, PyObject *args){
     VALIDATE_LIST(PyDataPoints);
 
     /* Calculate n and d based on PyDataPoints dimensions */
-    n = PyList_Size(PyDataPoints); 
+    n = PyList_Size(PyDataPoints);
     d = n > 0 ? PyList_Size(PyList_GetItem(PyDataPoints, 0)) : 0;
 
     data_matrix = create_matrix(n, d);
@@ -118,7 +115,6 @@ static PyObject* py_ddg(PyObject *self, PyObject *args){
     A = sym(data_matrix, n, d);
     D = ddg(A ,n);
     result_mat = cMatrix_to_PyObject(D, n, n);
-
     free_matrix(A, n), free_matrix(data_matrix, n), free_matrix(D, n);
     return result_mat;
 }
@@ -129,7 +125,6 @@ static PyObject* py_ddg(PyObject *self, PyObject *args){
  * Returns: Python list of lists representing the normalized similarity matrix.
  */
 static PyObject* py_norm(PyObject *self, PyObject *args){
-    (void)self;
     double **data_matrix ,**D, **A, **W;
     int n, d;
     PyObject *PyDataPoints;
@@ -140,12 +135,12 @@ static PyObject* py_norm(PyObject *self, PyObject *args){
     }
     VALIDATE_LIST(PyDataPoints);
 
-    /* Calculate n and d based on PyDataPoints dimensions */
     n = PyList_Size(PyDataPoints); 
     d = n > 0 ? PyList_Size(PyList_GetItem(PyDataPoints, 0)) : 0;
 
     data_matrix = create_matrix(n, d);
     PyObj_To_cMatrix(PyDataPoints, data_matrix, n, d);
+
     A = sym(data_matrix, n, d);
     D = ddg(A ,n);
     W = norm(D, A, n);
@@ -161,7 +156,6 @@ static PyObject* py_norm(PyObject *self, PyObject *args){
  * Returns: Python list of lists representing the resulting H matrix.
  */
 static PyObject* py_symnmf(PyObject *self, PyObject *args){
-    (void)self;
     double **W, **H;
     int n, k;
     PyObject *Py_W, *Py_H;
@@ -181,9 +175,8 @@ static PyObject* py_symnmf(PyObject *self, PyObject *args){
     PyObj_To_cMatrix(Py_H, H, n, k);
 
     H = optimize_H(H, W, n, k);
-    CHECK_MATRIX(H);
-
     result_mat = cMatrix_to_PyObject(H, n, k);
+    
     free_matrix(W, n), free_matrix(H, n);
     return result_mat;
 }

@@ -11,21 +11,12 @@
 #define MAX_ITER 300
 #define EPSILON 1e-4
 
-/* Macro to check if a matrix is NULL */
-#define CHECK_MATRIX(mat) \
-    do { \
-        if ((mat) == NULL) { \
-            fprintf(stderr, "%s\n", ERROR_MESSAGE); \
-            exit(1); \
-        } \
-    } while (0)
-
-
 /* Function declarations from symnmf.c */
 int compute_d(FILE* fp);
 int compute_n(FILE* fp);
 double** compute_data_matrix(FILE* file, int n, int d);
 double** create_matrix(int rows, int columns);
+int check_matrix(double **mat);
 void free_matrix(double** matrix, int n);
 void print_matrix(double** matrix, int rows, int columns);
 double vector_distance(double *x, double *y, int d);

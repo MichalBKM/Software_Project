@@ -76,6 +76,21 @@ double** compute_data_matrix(FILE* file, int n, int d){
 }
 
 /**
+ * @brief Checks if a pointer is NULL, indicating allocation failure.
+ * 
+ * @param mat Matrix pointer to check.
+ * @return int 1 if NULL (error), 0 otherwise.
+ */
+
+int check_pointer(void *ptr) {
+    if (ptr == NULL) {
+        fprintf(stderr, "%s\n", ERROR_MESSAGE);
+        return 1;
+    }
+    return 0;
+}
+
+/**
  * @brief Allocates memory for a matrix and returns a pointer to it
  * 
  * @param rows Number of rows in matrix
@@ -85,19 +100,17 @@ double** compute_data_matrix(FILE* file, int n, int d){
 double** create_matrix(int rows, int columns){
     int i;
     double **matrix = malloc(sizeof(double*) * rows);
-    if (matrix == NULL){
-        fprintf(stderr, "%s\n", ERROR_MESSAGE);
-        exit(1);
-    }
+    if (check_pointer(matrix)) exit(1);
     for (i=0; i<rows; i++){
-        matrix[i] = malloc(sizeof(double) * columns);
-        if (matrix[i] == NULL){
-            fprintf(stderr, "%s\n", ERROR_MESSAGE);
+        matrix[i] = calloc(columns, sizeof(double));
+        if (check_pointer(matrix[i])){
+            free_matrix(matrix, i);
             exit(1);
         }
     }
     return matrix;
 }
+
 
 /**
  * @brief Free the allocated memory of a given matrix
@@ -122,8 +135,8 @@ void free_matrix(double** matrix, int n){
  * @param columns Number of columns in matrix
  */
 void print_matrix(double** matrix, int rows, int columns){
-    /* @TODO: Handle the case of matrix = NULL  */
     int i, j;
+    if (!check_pointer(matrix)) exit(1);
     for(i=0; i<rows; i++){
         for(j=0;j<columns;j++){
             if(j<columns-1)
@@ -185,7 +198,7 @@ double** ddg(double** A, int n){
     double** D = create_matrix(n,n);
     int i,j;
     for (i=0; i<n; i++){
-        D[i][i] = 0;
+        D[i][i] = 0.0;
         for (j=0; j<n; j++){
             D[i][i] += A[i][j];
         }
@@ -206,9 +219,9 @@ double** norm(double** D, double** A, int n){
     double* D_inv_sqrt = malloc(n * sizeof(double));
     int i, j;
 
-    if (D_inv_sqrt == NULL) {
-        fprintf(stderr, "%s\n", ERROR_MESSAGE);
-        exit(1);
+    if (check_pointer(D_inv_sqrt)) {
+        free_matrix(W, n);
+        return NULL;
     }
     for (i=0; i<n; i++){
         if (D[i][i]!=0) { D_inv_sqrt[i] = (1.0 / sqrt(D[i][i])); }
@@ -407,6 +420,10 @@ double** compute_goals(double **data_matrix, const char *goal, int n, int d) {
     W = norm(D, A, n);
 
     free_matrix(A, n), free_matrix(D, n);
+    if (strcmp(goal, "norm") != 0){
+        free_matrix(W, n);
+        return NULL;
+    }
     return W; 
 }
 
@@ -422,7 +439,6 @@ int main(int argc, char** argv){
         return 1;
     }
     goal = argv[1];
-    /* @TODO: VALIDATE GOAL */
     file_name = argv[2];
 
     file = fopen(file_name, "r");
@@ -436,9 +452,8 @@ int main(int argc, char** argv){
     fclose(file);
 
     result_matrix = compute_goals(data_matrix, goal, n, d);
-    if(result_matrix == NULL){
-        fprintf(stderr, "%s\n", ERROR_MESSAGE);
-        free_matrix(result_matrix,n);
+    if(check_pointer(result_matrix)){
+        free_matrix(data_matrix,n);
         return 1;
     }
 

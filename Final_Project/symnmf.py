@@ -1,5 +1,4 @@
 import sys
-import math
 import numpy as np
 import symnmfmodule
 
@@ -16,14 +15,11 @@ def compute_data_matrix(filename):
     return matrix
 
 def print_matrix(matrix):
-
     for row in matrix:
         print(",".join(f"{x:.4f}" for x in row))
 
 def initialize_H(n, k, W):
-
     m = np.mean(W)
-
     upper_bound = 2 * np.sqrt(m / k)
 
     H = np.random.uniform(0, upper_bound, (n, k))
@@ -55,7 +51,7 @@ def main():
         W = symnmfmodule.norm(dataMatrix)
         print_matrix(W)
     else:
-        perror("An Error Has Occurred")
+        print("An Error Has Occurred")
         exit(1)
 
 

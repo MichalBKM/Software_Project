@@ -14,8 +14,7 @@ def closest_centroid(vector, centroids):
 
 def symnmf_clustering(data_matrix, k):
     n = len(data_matrix)
-    d = len(data_matrix[0])
-    W = symnmfmodule.norm(data_matrix, n, d)
+    W = symnmfmodule.norm(data_matrix)
     H = initialize_H(n, k, W)
     optimal_H = symnmfmodule.symnmf(W, H, n, k) #calculate OPT h using W and init H
     optimal_H = np.array(optimal_H)
