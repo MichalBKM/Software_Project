@@ -12,6 +12,7 @@
  * @return int d The vector size
  */
 int compute_d(FILE* fp){
+    
     int d = 0;
     char ch;
     while((ch = fgetc(fp)) != '\n'){
@@ -136,7 +137,7 @@ void free_matrix(double** matrix, int n){
  */
 void print_matrix(double** matrix, int rows, int columns){
     int i, j;
-    if (!check_pointer(matrix)) exit(1);
+    if (check_pointer(matrix)) exit(1);
     for(i=0; i<rows; i++){
         for(j=0;j<columns;j++){
             if(j<columns-1)
@@ -405,20 +406,17 @@ double** compute_goals(double **data_matrix, const char *goal, int n, int d) {
     double **A, **W, **D; 
     
     A = sym(data_matrix, n, d);
-
     if (strcmp(goal, "sym") == 0) {
         return A;
     }
-
+    
     D = ddg(A, n);
-
     if (strcmp(goal, "ddg") == 0) {
         free_matrix(A, n);
         return D;
     }
 
     W = norm(D, A, n);
-
     free_matrix(A, n), free_matrix(D, n);
     if (strcmp(goal, "norm") != 0){
         free_matrix(W, n);
@@ -435,7 +433,7 @@ int main(int argc, char** argv){
     double **result_matrix, **data_matrix;
     FILE *file;
     if (argc != 3){
-        fprintf(stderr, "An Error Has Occured\n Invalid number of arguments");
+        fprintf(stderr, "An Error Has Occured\n");
         return 1;
     }
     goal = argv[1];
@@ -443,7 +441,7 @@ int main(int argc, char** argv){
 
     file = fopen(file_name, "r");
     if (!file) {
-        fprintf(stderr, "An Error Has Occurred (File Reading Error)\n");
+        fprintf(stderr, "An Error Has Occurred\n");
         return 1;
     }
 
@@ -453,10 +451,10 @@ int main(int argc, char** argv){
 
     result_matrix = compute_goals(data_matrix, goal, n, d);
     if(check_pointer(result_matrix)){
+        fprintf(stderr, "An Error Has Occurred\n");
         free_matrix(data_matrix,n);
         return 1;
     }
-
     print_matrix(result_matrix, n, n);
     free_matrix(result_matrix, n), free_matrix(data_matrix, n);
     return 0;

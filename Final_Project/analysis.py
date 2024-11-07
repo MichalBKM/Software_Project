@@ -38,8 +38,8 @@ def main():
     kmeans_values = kmeans_clustering(data_matrix, k) 
     kmeans_score = silhouette_score(data_matrix, kmeans_values)
 
-    print(f"nmf: {symnmf_score: .4f}")
-    print(f"kmeans: {kmeans_score: .4f}")
+    print(f"nmf:{symnmf_score: .4f}")
+    print(f"kmeans:{kmeans_score: .4f}")
 
 
 

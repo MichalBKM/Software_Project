@@ -16,7 +16,7 @@ int compute_d(FILE* fp);
 int compute_n(FILE* fp);
 double** compute_data_matrix(FILE* file, int n, int d);
 double** create_matrix(int rows, int columns);
-int check_matrix(double **mat);
+int check_pointer(void *ptr);
 void free_matrix(double** matrix, int n);
 void print_matrix(double** matrix, int rows, int columns);
 double vector_distance(double *x, double *y, int d);
