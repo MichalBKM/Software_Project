@@ -30,7 +30,6 @@ def main():
     file_name = sys.argv[2]
 
     data_matrix = compute_data_matrix(file_name) #load data
-    
 
     symnmf_values = symnmf_clustering(data_matrix, k)
     symnmf_score = silhouette_score(data_matrix, symnmf_values)
@@ -38,10 +37,9 @@ def main():
     kmeans_values = kmeans_clustering(data_matrix, k) 
     kmeans_score = silhouette_score(data_matrix, kmeans_values)
 
-    print(f"nmf:{symnmf_score: .4f}")
-    print(f"kmeans:{kmeans_score: .4f}")
-
-
+    print("nmf: %.4f" % symnmf_score)
+    print("kmeans: %.4f" % kmeans_score)
+    
 
 if __name__ == "__main__":
     main()

@@ -29,28 +29,32 @@ def initialize_H(n, k, W):
     return H.tolist()
 
 def main():
-    k = int(sys.argv[1])
-    goal = sys.argv[2]
-    file_name = sys.argv[3]
+    try:
+        k = int(sys.argv[1])
+        goal = sys.argv[2]
+        file_name = sys.argv[3]
 
-    dataMatrix = compute_data_matrix(file_name)
-    n = len(dataMatrix)
-    
-    if goal == 'symnmf':
-        W = symnmfmodule.norm(dataMatrix)
-        H = initialize_H(n, k, W)
-        optimal_H = symnmfmodule.symnmf(W, H, n, k)
-        print_matrix(optimal_H)
-    elif goal == 'sym':
-        A = symnmfmodule.sym(dataMatrix)
-        print_matrix(A)
-    elif goal == 'ddg':
-        D = symnmfmodule.ddg(dataMatrix)
-        print_matrix(D)
-    elif goal == 'norm':
-        W = symnmfmodule.norm(dataMatrix)
-        print_matrix(W)
-    else:
+        dataMatrix = compute_data_matrix(file_name)
+        n = len(dataMatrix)
+        
+        if goal == 'symnmf':
+            W = symnmfmodule.norm(dataMatrix)
+            H = initialize_H(n, k, W)
+            optimal_H = symnmfmodule.symnmf(W, H, n, k)
+            print_matrix(optimal_H)
+        elif goal == 'sym':
+            A = symnmfmodule.sym(dataMatrix)
+            print_matrix(A)
+        elif goal == 'ddg':
+            D = symnmfmodule.ddg(dataMatrix)
+            print_matrix(D)
+        elif goal == 'norm':
+            W = symnmfmodule.norm(dataMatrix)
+            print_matrix(W)
+        else:
+            print("An Error Has Occurred")
+            exit(1)
+    except ValueError:
         print("An Error Has Occurred")
         exit(1)
 
