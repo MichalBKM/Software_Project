@@ -55,28 +55,28 @@ def initialize_H(n, k, W):
 
 def main():
     try:
-        k = int(sys.argv[1])
-        goal = sys.argv[2]
-        file_name = sys.argv[3]
+        k = int(sys.argv[1]) #number of required clusters
+        goal = sys.argv[2] #goal for matrix calculations
+        file_name = sys.argv[3] #the path to the input file
 
         dataMatrix = compute_data_matrix(file_name)
         n = len(dataMatrix)
         
-        if goal == 'symnmf':
+        if goal == 'symnmf': #compute the whole symNMF process
             W = symnmfmodule.norm(dataMatrix)
             H = initialize_H(n, k, W)
             optimal_H = symnmfmodule.symnmf(W, H, n, k)
             print_matrix(optimal_H)
-        elif goal == 'sym':
+        elif goal == 'sym': #compute only SYM matrix
             A = symnmfmodule.sym(dataMatrix)
             print_matrix(A)
-        elif goal == 'ddg':
+        elif goal == 'ddg': #compute only DDG matrix
             D = symnmfmodule.ddg(dataMatrix)
             print_matrix(D)
-        elif goal == 'norm':
+        elif goal == 'norm': #compute only NORM matrix
             W = symnmfmodule.norm(dataMatrix)
             print_matrix(W)
-        else:
+        else: #if the goal is not one of the allowed goals
             print("An Error Has Occurred")
             exit(1)
     except ValueError:
