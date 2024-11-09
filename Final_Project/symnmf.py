@@ -4,7 +4,6 @@ import symnmfmodule
 
 np.random.seed(1234)
 
-#reads a txt file and convert it to a 2d array V
 def compute_data_matrix(filename):
     """
     Reads a txt file containing a matrix and converts it to a 2D array of float type.
