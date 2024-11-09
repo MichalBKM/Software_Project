@@ -54,6 +54,9 @@ def initialize_H(n, k, W):
     return H.tolist()
 
 def main():
+    """
+    Main function to perform the requested operation (symnmf, sym, ddg, or norm) on the matrix.
+    """
     try:
         k = int(sys.argv[1]) #number of required clusters
         goal = sys.argv[2] #goal for matrix calculations
