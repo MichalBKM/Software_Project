@@ -6,6 +6,15 @@ np.random.seed(1234)
 
 #reads a txt file and convert it to a 2d array V
 def compute_data_matrix(filename):
+    """
+    Reads a txt file containing a matrix and converts it to a 2D array of float type.
+    
+    Parameters:
+    filename (str): The path to the file containing the matrix.
+
+    Returns:
+    matrix: A 2D list of numbers.
+    """
     file = open(filename, 'r')
     matrix = []
     for row in file:
@@ -15,10 +24,27 @@ def compute_data_matrix(filename):
     return matrix
 
 def print_matrix(matrix):
+    """
+    Prints a matrix.
+
+    Parameters:
+    matrix (list): A 2D list of numbers.
+    """
     for row in matrix:
         print(",".join(f"{x:.4f}" for x in row))
 
 def initialize_H(n, k, W):
+    """
+    Initializes matrix H of size n X k with random values bounded by an upper bound.
+    
+    Parameters:
+    n (int): Number of rows in matrix H.
+    k (int): Number of columns in matrix H.
+    W (list): The data matrix used to compute the upper bound for initializing H.
+
+    Returns:
+    H: A 2D list representing the initialized matrix H.
+    """
     m = np.mean(W)
     upper_bound = 2 * np.sqrt(m / k)
 
